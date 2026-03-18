@@ -1,8 +1,11 @@
 #include "splashkit.h"
 #include "utilities.h"
 
+const int POINTS_PER_GOAL = 6;
+const int POINTS_PER_BEHIND = 1;
+
 string team_name;
-int goals, behinds, score;
+int menu_selection, goals, behinds, value_to_update;
 
 int read_integer_range(string prompt, int bound_1, int bound_2)
 {
@@ -25,6 +28,31 @@ int read_integer_range(string prompt, int bound_1, int bound_2)
         input = read_integer(prompt);
     }
     return input;
+}
+
+bool read_boolean(string prompt)
+{
+    string input = read_string(prompt);
+
+    input = to_lowercase(input);
+
+    while (!(input == "y" or input == "n"))
+    {
+        write_line("Enter Y or N!");
+        input = read_string(prompt);
+    }
+    if (input == "y")
+    {
+        return true;
+    }
+    else if (input == "n")
+    {
+        return false;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 void draw_heading_line(int width)
@@ -53,6 +81,11 @@ void draw_title(string title, int width)
     draw_heading_line(width);
 }
 
+int score()
+{
+    return (goals * POINTS_PER_GOAL) + (behinds * POINTS_PER_BEHIND);
+}
+
 void initialise()
 {
     draw_title("Score Calculator", 26);
@@ -64,10 +97,8 @@ void initialise()
     goals = read_integer("Enter goals: ");
     behinds = read_integer("Enter behinds: ");
 
-    score = (goals * 6) + behinds;
-
     write_line();
-    write_line("Score: " + to_string(score));
+    write_line("Score: " + to_string(score()));
     write_line();
 }
 
@@ -80,12 +111,61 @@ void draw_main_menu()
     write_line("3: Print details");
     write_line("4: Quit");
     draw_heading_line(26);
-    
+}
+
+void update(int &var, int new_value)
+{
+    var = new_value;
 }
 
 int main()
 {
     initialise();
-    draw_main_menu();
 
+    bool quit = false;
+
+    do
+    {
+
+        draw_main_menu();
+
+        menu_selection = read_integer_range("Enter Option: ", 1, 4);
+
+        write_line();
+
+        switch (menu_selection)
+        {
+        case 1:
+
+            write_line("Current goals: " + to_string(goals));
+            value_to_update = read_integer("Enter new goals: ");
+            update(goals, value_to_update);
+            write_line();
+            write_line("Current score: " + to_string(score()));
+            break;
+
+        case 2:
+            write_line("Current behinds: " + to_string(behinds));
+            value_to_update = read_integer("Enter new behinds: ");
+            update(behinds, value_to_update);
+            write_line();
+            write_line("Current score: " + to_string(score()));
+            break;
+
+        case 3:
+            write_line("Stats for " + team_name + ":");
+            write_line("Goals: " + to_string(goals));
+            write_line("Behinds: " + to_string(behinds));
+            write_line("Total score: " + to_string(score()));
+            break;
+
+        case 4:
+            quit = read_boolean("Are you sure you want to quit? (Y/N): ");
+            break;
+        }
+        write_line();
+        write_line();
+    } while (quit == false);
+
+    write_line("Bye!");
 }
