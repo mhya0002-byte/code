@@ -1,9 +1,6 @@
 #include "splashkit.h"
 #include "utilities.h"
 
-string team_name;
-int menu_selection, goals, behinds, value_to_update;
-
 int read_integer_range(string prompt, int bound_1, int bound_2)
 {
     int lower_bound;
@@ -78,12 +75,12 @@ void draw_title(string title, int width)
     draw_heading_line(width);
 }
 
-int score()
+int score(int goals, int behinds)
 {
     return (goals * 6) + behinds;
 }
 
-void initialise()
+void initialise(string team_name, int &goals, int &behinds)
 {
     draw_title("Score Calculator", 26);
     write_line();
@@ -95,7 +92,7 @@ void initialise()
     behinds = read_integer("Enter behinds: ");
 
     write_line();
-    write_line("Score: " + to_string(score()));
+    write_line("Score: " + to_string(score(goals, behinds)));
     write_line();
 }
 
@@ -117,16 +114,21 @@ void update(int &var, int new_value)
 
 int main()
 {
-    initialise();
+
+    int goals, behinds;
+    string team_name;
+    initialise(team_name, goals, behinds);
 
     bool quit = false;
+
+    int value_to_update;
 
     do
     {
 
         draw_main_menu();
 
-        menu_selection = read_integer_range("Enter Option: ", 1, 4);
+        int menu_selection = read_integer_range("Enter Option: ", 1, 4);
 
         write_line();
 
@@ -138,7 +140,7 @@ int main()
             value_to_update = read_integer("Enter new goals: ");
             update(goals, value_to_update);
             write_line();
-            write_line("Current score: " + to_string(score()));
+            write_line("Current score: " + to_string(score(goals, behinds)));
             break;
 
         case 2:
@@ -146,14 +148,14 @@ int main()
             value_to_update = read_integer("Enter new behinds: ");
             update(behinds, value_to_update);
             write_line();
-            write_line("Current score: " + to_string(score()));
+            write_line("Current score: " + to_string(score(goals, behinds)));
             break;
 
         case 3:
             write_line("Stats for " + team_name + ":");
             write_line("Goals: " + to_string(goals));
             write_line("Behinds: " + to_string(behinds));
-            write_line("Total score: " + to_string(score()));
+            write_line("Total score: " + to_string(score(goals, behinds)));
             break;
 
         case 4:
