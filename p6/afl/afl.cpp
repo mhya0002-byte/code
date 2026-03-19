@@ -1,9 +1,6 @@
 #include "splashkit.h"
 #include "utilities.h"
 
-const int POINTS_PER_GOAL = 6;
-const int POINTS_PER_BEHIND = 1;
-
 string team_name;
 int menu_selection, goals, behinds, value_to_update;
 
@@ -83,7 +80,7 @@ void draw_title(string title, int width)
 
 int score()
 {
-    return (goals * POINTS_PER_GOAL) + (behinds * POINTS_PER_BEHIND);
+    return (goals * 6) + behinds;
 }
 
 void initialise()
