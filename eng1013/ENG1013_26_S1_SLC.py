@@ -136,7 +136,8 @@ def main():
             
             result = calc_penalty(vehType, roadSpeed, speedLimit)
 
-            overSpeed = f"{result["overspeed"]:.2f}"
+            overSpeed = result["overspeed"]
+            overSpeed = f"{overSpeed:.2f}"
             print(f"Overspeed: {overSpeed} km/h")
 
             demerits = result["demerits"]
@@ -149,7 +150,8 @@ def main():
                 print("No automatic license suspension given")
             else: print(f"{suspension} months of automatic license suspension are given")
 
-            fines = f"{result["fines due"]:.2f}"
+            fines = result["fines due"]
+            fines = f"{fines:.2f}"
             if fines == 0:
                 print("No fines given")
             else: print(f"A ${fines} fine is given")
