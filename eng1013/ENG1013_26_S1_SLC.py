@@ -164,4 +164,5 @@ def main():
     except KeyboardInterrupt:
         print("\nUser Keyboard Interrupt - Exiting")
 
-main()
+if __name__ == "__main__":
+    main()
