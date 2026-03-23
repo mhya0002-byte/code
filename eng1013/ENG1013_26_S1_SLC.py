@@ -102,61 +102,66 @@ def calc_penalty(vehType, roadSpeed, speedLimit):
             penalty["fines due"] = 2127.00
     return penalty
 
-        
-       
-
 def main():
     """
     Receives and validates vehicle data from user's input, and neatly prints out the 
     data returned by the calc_penalty function, as well as handling restarting and quitting of the program. 
     No parameters or returns
     """
+    try:
+        while True:
+            vehType = input("Are you driving a heavy vehicle? Enter Y/N: ").lower()
+            while not(vehType == "y" or vehType == "n"):
+                print("Enter Y or N!")
+                vehType = input("Are you driving a heavy vehicle? Enter Y/N: ").lower()
+            if vehType == "y":
+                vehType = True
+            else: vehType = False
 
-    vehType = input("Are you driving a heavy vehicle? Enter Y/N: ").lower()
-    while not(vehType == "y" or vehType == "n"):
-        print("Enter Y or N!")
-        vehType = input("Are you driving a heavy vehicle? Enter Y/N: ").lower()
-    if vehType == "y":
-        vehType = True
-    else: vehType = False
+            while True:
+                try:
+                    speedLimit = int(input("What is the speed limit? Enter an integer in km/h: "))
+                except ValueError:
+                    print("Enter an integer!")
+                else:
+                    break
 
-    while True:
-        try:
-            speedLimit = int(input("What is the speed limit? Enter an integer in km/h: "))
-        except ValueError:
-            print("Enter an integer!")
-        else:
-            break
+            while True:
+                try:
+                    roadSpeed = float(input("What is the vehicle's speed? Enter a float in km/h: "))
+                except ValueError:
+                    print("Enter a float!")
+                else:
+                    break
+            
+            result = calc_penalty(vehType, roadSpeed, speedLimit)
 
-    while True:
-        try:
-            roadSpeed = float(input("What is the vehicle's speed? Enter a float in km/h: "))
-        except ValueError:
-            print("Enter a float!")
-        else:
-            break
-    
-    result = calc_penalty(vehType, roadSpeed, speedLimit)
+            overSpeed = f"{result["overspeed"]:.2f}"
+            print(f"Overspeed: {overSpeed} km/h")
 
-    overSpeed = f"{result["overspeed"]:.2f}"
-    print(f"Overspeed: {overSpeed} km/h")
+            demerits = result["demerits"]
+            if demerits == 0:
+                print("No demerit points given")
+            else: print(f"{demerits} demerit points given")
 
-    demerits = result["demerits"]
-    if demerits == 0:
-        print("No demerit points given")
-    else: print(f"{demerits} demerit points given")
+            suspension = result["suspension"]
+            if suspension == 0:
+                print("No automatic license suspension given")
+            else: print(f"{suspension} months of automatic license suspension are given")
 
-    suspension = result["suspension"]
-    if suspension == 0:
-        print("No automatic license suspension given")
-    else: print(f"{suspension} months of automatic license suspension are given")
+            fines = f"{result["fines due"]:.2f}"
+            if fines == 0:
+                print("No fines given")
+            else: print(f"A ${fines} fine is given")
 
-    fines = f"{result["fines due"]:.2f}"
-    if fines == 0:
-        print("No fines given")
-    else: print(f"A ${fines} fine is given")
-
-
-    
+            restart = input("Restart? Enter Y/N: ").lower()
+            while not(restart == "y" or restart == "n"):
+                print("Enter Y or N!")
+                restart = input("Restart? Enter Y/N: ").lower()
+            if restart == "n":
+                print("Exiting")
+                break
+    except KeyboardInterrupt:
+        print("\nUser Keyboard Interrupt - Exiting")
 
 main()
