@@ -35,13 +35,29 @@ string to_string(day d)
     }
 }
 
+const int NUM_DAYS = (int)SATURDAY + 1;
+
+day read_day(string prompt)
+{
+    int day_number;
+    write_line(prompt);
+
+    for (int i = 0; i < NUM_DAYS; i++)
+    {
+        day current_day = (day)i;
+        write_line(to_string(i+1) + ": " + to_string(current_day));
+    }
+    day_number = read_integer("Enter a day number (1-" + to_string(NUM_DAYS) + "): ");
+    return(day)day_number;
+}
+
 int main()
 {
     // Enum variable declaration
     day today;
 
     // Assigning a value to the enum variable
-    today = WEDNESDAY;
+    today = read_day("What day is it today? ");
 
     // Print the value of today
     write_line("Today is " + to_string(today));
