@@ -80,7 +80,7 @@ int score(int goals, int behinds)
     return (goals * 6) + behinds;
 }
 
-void initialise(string team_name, int &goals, int &behinds)
+void initialise(string &team_name, int &goals, int &behinds)
 {
     draw_title("Score Calculator", 26);
     write_line();
@@ -102,12 +102,18 @@ void draw_main_menu()
     write_line();
     write_line("1: Update goals");
     write_line("2: Update behinds");
-    write_line("3: Print details");
-    write_line("4: Quit");
+    write_line("3: Update team name");
+    write_line("4: Print details");
+    write_line("5: Quit");
     draw_heading_line(26);
 }
 
 void update(int &var, int new_value)
+{
+    var = new_value;
+}
+
+void update(string &var, string new_value)
 {
     var = new_value;
 }
@@ -121,14 +127,15 @@ int main()
 
     bool quit = false;
 
-    int value_to_update;
+    int int_to_update;
+    string string_to_update;
 
     do
     {
 
         draw_main_menu();
 
-        int menu_selection = read_integer_range("Enter Option: ", 1, 4);
+        int menu_selection = read_integer_range("Enter Option: ", 1, 5);
 
         write_line();
 
@@ -137,28 +144,36 @@ int main()
         case 1:
 
             write_line("Current goals: " + to_string(goals));
-            value_to_update = read_integer("Enter new goals: ");
-            update(goals, value_to_update);
+            int_to_update = read_integer("Enter new goals: ");
+            update(goals, int_to_update);
             write_line();
             write_line("Current score: " + to_string(score(goals, behinds)));
             break;
 
         case 2:
             write_line("Current behinds: " + to_string(behinds));
-            value_to_update = read_integer("Enter new behinds: ");
-            update(behinds, value_to_update);
+            int_to_update = read_integer("Enter new behinds: ");
+            update(behinds, int_to_update);
             write_line();
             write_line("Current score: " + to_string(score(goals, behinds)));
             break;
 
         case 3:
+            write_line("Current team name: " + team_name);
+            string_to_update = read_string("Enter new team name: ");
+            update(team_name, string_to_update);
+            write_line();
+            write_line("Team name changed to " + team_name);
+            break;
+
+        case 4:
             write_line("Stats for " + team_name + ":");
             write_line("Goals: " + to_string(goals));
             write_line("Behinds: " + to_string(behinds));
             write_line("Total score: " + to_string(score(goals, behinds)));
             break;
 
-        case 4:
+        case 5:
             quit = read_boolean("Are you sure you want to quit? (Y/N): ");
             break;
         }
