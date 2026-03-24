@@ -19,9 +19,9 @@ def calc_penalty(vehType, roadSpeed, speedLimit):
 
     overSpeed = math.floor(overSpeed)
 
-    penalty = {"overspeed": overSpeed}
+    penalty = {"overspeed": overSpeed, "demerits": 0, "suspension": 0, "fines due": 0}
 
-    if vehType == 0:
+    if not vehType:
         if overSpeed < 0:
             penalty["demerits"] = 0
             penalty["suspension"] = 0
@@ -119,7 +119,8 @@ def main():
                 vehType = input("Are you driving a heavy vehicle? Enter Y/N: ")
             if vehType == "Y":
                 vehType = True
-            else: vehType = False
+            else: 
+                vehType = False
 
             while True:
                 try:
@@ -146,18 +147,21 @@ def main():
             demerits = result["demerits"]
             if demerits == 0:
                 print("No demerit points given")
-            else: print(f"{demerits} demerit points given")
+            else: 
+                print(f"{demerits} demerit points given")
 
             suspension = result["suspension"]
             if suspension == 0:
                 print("No automatic license suspension given")
-            else: print(f"{suspension} months of automatic license suspension are given")
+            else: 
+                print(f"{suspension} months of automatic license suspension are given")
 
             fines = result["fines due"]
             fines = f"{fines:.2f}"
             if fines == 0:
                 print("No fines given")
-            else: print(f"A ${fines} fine is given")
+            else: 
+                print(f"A ${fines} fine is given")
 
             restart = input("Restart? Enter Y/N: ")
             while not(restart == "Y" or restart == "N"):
