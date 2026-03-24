@@ -3,53 +3,59 @@
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
 
+struct entity
+{
+    point_2d pos;
+    double radius;
+    color clr;
+};
+
+struct spider_data
+{
+    entity ent;
+};
+
+struct fly_data
+{
+    entity ent;
+};
+
 struct game_data
 {
     spider_data spider;
     fly_data fly;
 };
 
-struct spider_data
-{
-    double x;
-    double y;
-};
-
-struct fly_data
-{
-    double x;
-    double y;
-};
-
 spider_data new_spider()
 {
     spider_data spider;
 
-    spider.x = SCREEN_WIDTH/2;
-    spider.y = SCREEN_HEIGHT/2;
+    spider = {{{SCREEN_WIDTH/2, SCREEN_HEIGHT/2}, 20, COLOR_BLACK}};
 
     return spider;
-
 }
 
 fly_data new_fly()
 {
     fly_data fly;
 
-    fly.x = 100;
-    fly.y = 100;
+    fly = {{{100, 100}, 15, COLOR_GREEN}};
+
 
     return fly;
+}
 
+void draw_entity(const entity &ent)
+{
+    fill_circle(ent.clr, ent.pos.x, ent.pos.y, ent.radius);
 }
 
 void draw_game(const game_data &game)
 {
     clear_screen(COLOR_WHITE);
-    
-    fill_circle(COLOR_BLACK, game.spider.x, game.spider.y, 20);
 
-    fill_circle(COLOR_GREEN, game.fly.x, game.fly.y, 15);
+    draw_entity(game.spider.ent);
+    draw_entity(game.fly.ent);
 
     refresh_screen();
 }
@@ -67,6 +73,5 @@ int main()
         process_events();
 
         draw_game(game);
-
     }
 }
