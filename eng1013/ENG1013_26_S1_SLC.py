@@ -1,6 +1,7 @@
 # Created by: Martin Hyatt
 # Date: 23 Mar 2026
 # Version: 1.1
+import math
 
 def calc_penalty(vehType, roadSpeed, speedLimit):
     """
@@ -15,6 +16,8 @@ def calc_penalty(vehType, roadSpeed, speedLimit):
     """
 
     overSpeed = roadSpeed - speedLimit
+
+    overSpeed = math.floor(overSpeed)
 
     penalty = {"overspeed": overSpeed}
 
@@ -110,11 +113,11 @@ def main():
     """
     try:
         while True:
-            vehType = input("Are you driving a heavy vehicle? Enter Y/N: ").lower()
-            while not(vehType == "y" or vehType == "n"):
+            vehType = input("Are you driving a heavy vehicle? Enter Y/N: ")
+            while not(vehType == "Y" or vehType == "N"):
                 print("Enter Y or N!")
-                vehType = input("Are you driving a heavy vehicle? Enter Y/N: ").lower()
-            if vehType == "y":
+                vehType = input("Are you driving a heavy vehicle? Enter Y/N: ")
+            if vehType == "Y":
                 vehType = True
             else: vehType = False
 
@@ -156,13 +159,13 @@ def main():
                 print("No fines given")
             else: print(f"A ${fines} fine is given")
 
-            restart = input("Restart? Enter Y/N: ").lower()
-            while not(restart == "y" or restart == "n"):
+            restart = input("Restart? Enter Y/N: ")
+            while not(restart == "Y" or restart == "N"):
                 print("Enter Y or N!")
-                restart = input("Restart? Enter Y/N: ").lower()
-            if restart == "n":
+                restart = input("Restart? Enter Y/N: ")
+            if restart == "N":
                 print("Exiting")
-                break
+                exit()
     except KeyboardInterrupt:
         print("\nUser Keyboard Interrupt - Exiting")
 
