@@ -37,7 +37,7 @@ pollInterval = 0
 lastPollTime = time.time()
 thisPollTime = lastPollTime
 
-input = [0, 0]
+input = [[0, 0] for pin in input_pins]
 
 try: 
 
@@ -46,11 +46,12 @@ try:
         thisPollTime = time.time()
         
         if thisPollTime - lastPollTime >= pollInterval:
-            
-            input[0] = input[1]
-            input[1] = board.digital_read(input_pins[4])[0]
-            if input == [1, 0]:
-                print("released")
+            for pin in input_pins:
+                button_number = input_pins.index(pin)
+                input[button_number][0] = input[button_number][1]
+                input[button_number][1] = board.digital_read(pin)[0]
+                if input[button_number] == [1, 0]:
+                    print(str(button_number) + " pressed")
                 
             lastPollTime = thisPollTime
             #time.sleep(0.1)
