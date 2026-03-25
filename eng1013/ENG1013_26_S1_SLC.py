@@ -11,98 +11,62 @@ def calc_penalty(vehType, roadSpeed, speedLimit):
             vehType (boolean): True if the vehicle is heavy.
             roadSpeed (float): Vehicle's speed
             speedLimit (integer): Road's speed limit
-        Returns a dictionary containing the overspeed (float), 
-        demerit points (integer), suspension months (integer), and fines due (float).
+        Returns a dictionary containing the overspeed (float), as well as a list containing 
+        the demerit points (integer), suspension months (integer), and fines due (float).
     """
 
     overSpeed = roadSpeed - speedLimit
 
     overSpeed = math.floor(overSpeed)
 
-    penalty = {"overspeed": overSpeed, "demerits": 0, "suspension": 0, "fines due": 0}
+    penalty = {"overspeed": overSpeed, "penalties": [0, 0, 0.00]}
 
     if not vehType:
         if overSpeed < 0:
-            penalty["demerits"] = 0
-            penalty["suspension"] = 0
-            penalty["fines due"] = 0
+            penalty["penalties"] = [0, 0, 0.00]
         elif overSpeed < 10:
-            penalty["demerits"] = 1
-            penalty["suspension"] = 0
-            penalty["fines due"] = 247.00
+            penalty["penalties"] = [1, 0, 247.00]
         elif overSpeed < 25:
             if speedLimit > 100:
-                penalty["demerits"] = 0
-                penalty["suspension"] = 3
+                penalty["penalties"] = [0, 3, 0.00]
             else:
-                penalty["demerits"] = 3
-                penalty["suspension"] = 0
-            penalty["fines due"] = 395.00
+                penalty["penalties"] = [3, 0, 0.00]
+            penalty["penalties"][2] = 395.00
         elif overSpeed < 30:
-            penalty["demerits"] = 0
-            penalty["suspension"] = 3
-            penalty["fines due"] = 543.00
+            penalty["penalties"] = [0, 3, 543.00]
         elif overSpeed < 35:
-            penalty["demerits"] = 0
-            penalty["suspension"] = 3
-            penalty["fines due"] = 642.00
+            penalty["penalties"] = [0, 3, 642.00]
         elif overSpeed < 40:
-            penalty["demerits"] = 0
-            penalty["suspension"] = 6
-            penalty["fines due"] = 741.00
+            penalty["penalties"] = [0, 6, 741.00]
         elif overSpeed < 45:
-            penalty["demerits"] = 0
-            penalty["suspension"] = 6
-            penalty["fines due"] = 840.00
+            penalty["penalties"] = [0, 6, 840.00]
         else:
-            penalty["demerits"] = 0
-            penalty["suspension"] = 12
-            penalty["fines due"] = 988.00
+            penalty["penalties"] = [0, 12, 988.00]
 
     
     else:
         if overSpeed < 0:
-            penalty["demerits"] = 0
-            penalty["suspension"] = 0
-            penalty["fines due"] = 0
+            penalty["penalties"] = [0, 0, 0.00]
         elif overSpeed < 10:
-            penalty["demerits"] = 1
-            penalty["suspension"] = 0
-            penalty["fines due"] = 324.00
+            penalty["penalties"] = [1, 0, 324.00]
         elif overSpeed < 25:
             if speedLimit > 100:
-                penalty["demerits"] = 0
-                penalty["suspension"] = 3
-                penalty["fines due"] = 740.00
+                penalty["penalties"] = [0, 3, 740.00]
             else:
                 if overSpeed < 15:
-                    penalty["demerits"] = 3
-                    penalty["suspension"] = 0
-                    penalty["fines due"] = 509.00
+                    penalty["penalties"] = [3, 0, 509.00]
                 else:
-                    penalty["demerits"] = 3
-                    penalty["suspension"] = 0
-                    penalty["fines due"] = 740.00
+                    penalty["penalties"] = [3, 0, 740.00]
         elif overSpeed < 30:
-            penalty["demerits"] = 0
-            penalty["suspension"] = 3
-            penalty["fines due"] = 1017.00
+            penalty["penalties"] = [0, 3, 1017.00]
         elif overSpeed < 35:
-            penalty["demerits"] = 0
-            penalty["suspension"] = 3
-            penalty["fines due"] = 1294.00
+            penalty["penalties"] = [0, 3, 1294.00]
         elif overSpeed < 40:
-            penalty["demerits"] = 0
-            penalty["suspension"] = 6
-            penalty["fines due"] = 1572.00
+            penalty["penalties"] = [0, 6, 1572.00]
         elif overSpeed < 45:
-            penalty["demerits"] = 0
-            penalty["suspension"] = 6
-            penalty["fines due"] = 1849.00
+            penalty["penalties"] = [0, 6, 1849.00]
         else:
-            penalty["demerits"] = 0
-            penalty["suspension"] = 12
-            penalty["fines due"] = 2127.00
+            penalty["penalties"] = [0, 12, 2127.00]
     return penalty
 
 def main():
@@ -144,21 +108,21 @@ def main():
             overSpeed = f"{overSpeed:.2f}"
             print(f"Overspeed: {overSpeed} km/h")
 
-            demerits = result["demerits"]
+            demerits = result["penalties"][0]
             if demerits == 0:
                 print("No demerit points given")
             else: 
                 print(f"{demerits} demerit points given")
 
-            suspension = result["suspension"]
+            suspension = result["penalties"][1]
             if suspension == 0:
                 print("No automatic license suspension given")
             else: 
                 print(f"{suspension} months of automatic license suspension are given")
 
-            fines = result["fines due"]
+            fines = result["penalties"][2]
             fines = f"{fines:.2f}"
-            if fines == 0:
+            if fines == "0.00":
                 print("No fines given")
             else: 
                 print(f"A ${fines} fine is given")
