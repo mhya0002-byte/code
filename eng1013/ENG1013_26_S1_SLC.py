@@ -54,6 +54,8 @@ def calc_penalty(vehType, roadSpeed, speedLimit):
                     penalty["penalties"] = [0, 0, 0.00]
                 elif penalty["overspeed"] < 10:
                     penalty["penalties"] = [1, 0, 324.00]
+                elif penalty["overspeed"] < 15:
+                    penalty["penalties"] = [3, 0, 509.00]
                 elif penalty["overspeed"] < 25:
                     penalty["penalties"] = [3, 0, 395.00]
                 elif penalty["overspeed"] < 30:
