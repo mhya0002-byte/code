@@ -20,7 +20,7 @@ def calc_penalty(vehType, roadSpeed, speedLimit):
     if overSpeed < 0:
         overSpeed = 0
 
-    penalty = {"overspeed": math.floor(overSpeed), "penalties": [0, 0, 0.00]}
+    penalty = {"overspeed": float(math.floor(overSpeed)), "penalties": [0, 0, 0.00]}
 
     if not vehType:
         if speedLimit > 100 and 10 <= penalty["overspeed"] < 25:                
