@@ -148,7 +148,7 @@ void delete_product(store_data &store)
 void update_product(store_data &store)
 {
 	int index = find_product(store);
-	
+
 	if (index == NO_CHOICE)
 	{
 		return;
@@ -190,16 +190,33 @@ void update_product(store_data &store)
 		return;
 	case QUIT_UPDATE:
 		return;
-	} while (option != QUIT_UPDATE);
+	}
+	while (option != QUIT_UPDATE)
+		;
 }
 
 void print_status(const store_data &store)
 {
-	write_line("Total sales: " + to_string(store.total_sales));
-	write_line("Total profit: " + to_string(store.total_profits));
+	write_line("Total sales: " + to_string(store.total_sales, 2));
+	write_line("Total profit: " + to_string(store.total_profits, 2));
 	write_line("Number of products: " + to_string(length(store.products)));
 
-	float stock_value;
+	float stock_value = 0;
+	int low_stock = 0;
+
+	for (int i = 0; i < length(store.products); i++)
+	{
+		product_data product = store.products[i];
+
+		stock_value += product.cost_price * product.stock;
+		if (product.stock < 10)
+		{
+			low_stock++;
+		}
+	}
+
+	write_line("Value of all stock: " + to_string(stock_value, 2));
+	write_line("Products with <10 items in stock: " + to_string(low_stock));
 }
 
 enum menu_option
@@ -230,9 +247,9 @@ int main()
 	store_data store = {};
 
 	add(store.products, product_data{"Eggs", 6, 10, 50});
-	add(store.products, product_data{"Bread", 6, 8, 50});
-	add(store.products, product_data{"Egg rolls", 10, 15, 50});
-	add(store.products, product_data{"Egg salad", 7, 8, 50});
+	add(store.products, product_data{"Bread", 6, 8, 20});
+	add(store.products, product_data{"Egg rolls", 10, 15, 10});
+	add(store.products, product_data{"Egg salad", 7, 8, 5});
 
 	write_line("Welcome to the product database!");
 
@@ -257,7 +274,7 @@ int main()
 			sell_product(store);
 			break;
 		case PRINT_STATUS:
-			// To implement
+			print_status(store);
 			break;
 		case LIST_PRODUCTS:
 			list_products(store);
