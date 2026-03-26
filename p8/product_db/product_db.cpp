@@ -145,6 +145,63 @@ void delete_product(store_data &store)
 	write_line("Deleted product " + name);
 }
 
+void update_product(store_data &store)
+{
+	int index = find_product(store);
+	
+	if (index == NO_CHOICE)
+	{
+		return;
+	}
+
+	enum update_submenu_option
+	{
+		UPDATE_NAME = 1,
+		UPDATE_COST_PRICE = 2,
+		UPDATE_SALE_PRICE = 3,
+		UPDATE_STOCK = 4,
+		QUIT_UPDATE = 5
+	};
+
+	write_line("Update menu: ");
+	write_line("1. Update name");
+	write_line("2. Update cost price");
+	write_line("3. Update sale price");
+	write_line("4. Update stock quantity");
+	write_line("5. Quit");
+
+	update_submenu_option option;
+
+	option = (update_submenu_option)read_integer_range("Please choose an option: ", 1, 5);
+
+	switch (option)
+	{
+	case UPDATE_NAME:
+		store.products[index].name = read_string("Enter the new name: ");
+		return;
+	case UPDATE_COST_PRICE:
+		store.products[index].cost_price = read_double("Enter the new cost price: ");
+		return;
+	case UPDATE_SALE_PRICE:
+		store.products[index].sale_price = read_double("Enter the new sale price: ");
+		return;
+	case UPDATE_STOCK:
+		store.products[index].stock = read_integer("Enter the new stock: ");
+		return;
+	case QUIT_UPDATE:
+		return;
+	} while (option != QUIT_UPDATE);
+}
+
+void print_status(const store_data &store)
+{
+	write_line("Total sales: " + to_string(store.total_sales));
+	write_line("Total profit: " + to_string(store.total_profits));
+	write_line("Number of products: " + to_string(length(store.products)));
+
+	float stock_value;
+}
+
 enum menu_option
 {
 	ADD_PRODUCT = 1,
@@ -194,7 +251,7 @@ int main()
 			delete_product(store);
 			break;
 		case UPDATE_PRODUCT:
-			// To implement
+			update_product(store);
 			break;
 		case SELL_PRODUCT:
 			sell_product(store);
