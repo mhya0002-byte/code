@@ -1,6 +1,6 @@
 # Created by: Martin Hyatt
 # Date: 23 Mar 2026
-# Version: 1.7
+# Version: 1.8
 
 def calc_penalty(vehType, roadSpeed, speedLimit):
     """
