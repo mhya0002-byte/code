@@ -74,6 +74,9 @@ setColour(2, "green")
 
 us1CycleActive = False
 us2CycleActive = False
+dualCycleActive = False
+
+us1StartTime = 0
 
 threshold = 5
 
@@ -93,12 +96,12 @@ try:
                     us1StartTime = time.time()
 
             if (us2_data[0] <= (10 - overheight_limit)):
-                if time.time() - us1StartTime <= threshold:
-                    if us1CycleActive == False:
-                        us1CycleActive = True
-                        us1StartTime = time.time()
+                if (time.time() - us1StartTime) >= threshold:
+                    if dualCycleActive == False:
+                        dualCycleActive = True
+                        dualStartTime = time.time()
 
-                if us2CycleActive == False:
+                elif us2CycleActive == False:
                     us2CycleActive = True
                     us2StartTime = time.time()
 
@@ -107,7 +110,7 @@ try:
                     setColour(1, "yellow")
                 if time.time() >= us1StartTime + 1:
                     setColour(1, "red")
-                if time.time() >= us1StartTime + 2:
+                if time.time() >= us1StartTime + 6:
                     setColour(1, "green")
                     us1CycleActive = False
             
@@ -116,9 +119,22 @@ try:
                     setColour(2, "yellow")
                 if time.time() >= us2StartTime + 1:
                     setColour(2, "red")
-                if time.time() >= us2StartTime + 2:
+                if time.time() >= us2StartTime + 6:
                     setColour(2, "green")
                     us2CycleActive = False
+
+            if dualCycleActive == True:
+                if time.time() < dualStartTime + 1:
+                    setColour(1, "yellow")
+                    setColour(2, "yellow")
+                if time.time() >= dualStartTime + 1:
+                    setColour(1, "red")
+                    setColour(2, "red")
+                if time.time() >= dualStartTime + 6:
+                    setColour(1, "green")
+                    setColour(2, "green")
+                    dualCycleActive = False
+
                 
         time.sleep(0.001)
         
