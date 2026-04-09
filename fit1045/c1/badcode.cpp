@@ -3,17 +3,16 @@
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
 
-int spider_radius = 25;
-int spider_speed = 3;
-
-int fly_radius = 3;
-
-// Set the spider in the center of the screen
-int spider_x = SCREEN_WIDTH / 2;
-int spider_y = SCREEN_HEIGHT / 2;
+const int SPIDER_RADIUS = 25;
+const int SPIDER_SPEED = 3;
+ 
+const int FLY_RADIUS = 3;
 
 int main()
 {
+    // Set the spider in the center of the screen
+    int spider_x = SCREEN_WIDTH / 2;
+    int spider_y = SCREEN_HEIGHT / 2;
 
     int fly_x = rnd(800), fly_y = rnd(600);
     bool fly_appeared = false;
@@ -26,14 +25,14 @@ int main()
 
     while (!quit_requested())
     {
-        if (key_down(RIGHT_KEY) && spider_x + spider_radius < SCREEN_WIDTH)
+        if (key_down(RIGHT_KEY) && spider_x + SPIDER_RADIUS < SCREEN_WIDTH)
         {
-            spider_x += spider_speed;
+            spider_x += SPIDER_SPEED;
         }
 
-        if (key_down(LEFT_KEY) && spider_x - spider_radius > 0)
+        if (key_down(LEFT_KEY) && spider_x - SPIDER_RADIUS > 0)
         {
-            spider_x -= spider_speed;
+            spider_x -= SPIDER_SPEED;
         }
 
         if (!fly_appeared && timer_ticks("game_timer") > time_to_appear)
@@ -45,11 +44,11 @@ int main()
         }
 
         clear_screen(color_white());
-        fill_circle(color_black(), spider_x, spider_y, spider_radius);
+        fill_circle(color_black(), spider_x, spider_y, SPIDER_RADIUS);
 
         if (fly_appeared)
         {
-            fill_circle(color_dark_green(), fly_x, fly_y, fly_radius);
+            fill_circle(color_dark_green(), fly_x, fly_y, FLY_RADIUS);
         }
 
         refresh_screen(60);
