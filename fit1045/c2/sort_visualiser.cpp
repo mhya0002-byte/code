@@ -1,7 +1,7 @@
 #include "splashkit.h"
 #include "splashkit-arrays.h"
 
-const int DATA_SIZE = 100;
+const int DATA_SIZE = 20;
 
 const double SCREEN_WIDTH = 1280;
 const double SCREEN_HEIGHT = 720;
@@ -37,12 +37,16 @@ void swap(int i1, int i2, fixed_array<int, DATA_SIZE> &data)
     data.set(i2, temp);
 }
 
-void visualise_array(const fixed_array<int, DATA_SIZE> &data, int highlight_index)
+void visualise_array(const fixed_array<int, DATA_SIZE> &data, int highlight_index, int algorithm)
 {
     double bar_distance = SCREEN_WIDTH / DATA_SIZE;
     double bar_width = bar_distance - (MARGIN * 2);
 
     clear_screen(BACKGROUND_COLOUR);
+
+    string text = algorithm == 0 ? "Bubble Sort" : "Insertion Sort";
+
+    draw_text(text, HIGHLIGHT_COLOUR, 0, 0);
 
     for (int i = 0; i < DATA_SIZE; i++)
     {
@@ -68,7 +72,7 @@ void bubble_sort_pass(fixed_array<int, DATA_SIZE> &data, int range)
         {
             swap(i, i + 1, data);
         }
-        visualise_array(data, i);
+        visualise_array(data, i, 0);
         delay(100);
     }
 }
@@ -78,6 +82,19 @@ void bubble_sort(fixed_array<int, DATA_SIZE> &data)
     for (int range = DATA_SIZE; range > 1; range--)
     {
         bubble_sort_pass(data, range);
+    }
+}
+
+void insertion_sort(fixed_array<int, DATA_SIZE> &data)
+{
+    for (int i = 0; i < length(data); i++)
+    {
+        for (int j = i; j > 0 and data.get(j - 1) > data.get(j); j--)
+        {
+            swap(j, j - 1, data);
+            visualise_array(data, j, 1);
+            delay(100);
+        }
     }
 }
 
@@ -91,15 +108,26 @@ void fill_array_random(fixed_array<int, DATA_SIZE> &data, int min, int max)
 
 int main()
 {
-    open_window("Sort visualiser", SCREEN_WIDTH, SCREEN_HEIGHT);
+    while (!quit_requested())
+    {
+        open_window("Sort visualiser", SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    fixed_array<int, DATA_SIZE> data;
+        fixed_array<int, DATA_SIZE> data;
 
-    fill_array_random(data, 1, 10);
+        fill_array_random(data, 1, 10);
 
-    bubble_sort(data);
+        bubble_sort(data);
 
-    delay(2000);
+        delay(2000);
+
+        fill_array_random(data, 1, 10);
+
+        insertion_sort(data);
+
+        delay(2000);
+
+        break;
+    }
 
     return 0;
 }
