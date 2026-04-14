@@ -12,28 +12,6 @@ const int MARGIN = 10;
 const color OUTLINE_COLOUR = color_light_blue();
 const color FILL_COLOUR = color_dark_blue();
 
-fixed_array<int, DATA_SIZE> shuffled_list()
-{
-    dynamic_array<int> temp_array;
-    fixed_array<int, DATA_SIZE> shuffled_array;
-
-    for (int i = 1; i < DATA_SIZE + 1; i++)
-    {
-        temp_array.add(i);
-    }
-
-    int rand_value;
-    int rand_index;
-
-    for (int i = 0; i < DATA_SIZE - 1; i++)
-    {
-        rand_index = rnd(0, length(temp_array) - 1);
-        rand_value = temp_array.get(rand_index);
-        temp_array.remove(rand_index);
-        shuffled_array.set(i, rand_value);
-    }
-    return shuffled_array;
-}
 
 void swap(int i1, int i2, fixed_array<int, DATA_SIZE> &data)
 {
@@ -91,7 +69,19 @@ int main()
 {
     open_window("Sort visualiser", SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    fixed_array<int, DATA_SIZE> data = shuffled_list();
+    fixed_array<int, DATA_SIZE> data;
+
+    data.set(0, 6);
+    data.set(1, 5);
+    data.set(2, 8);
+    data.set(3, 3);
+    data.set(4, 7);
+    data.set(5, 2);
+    data.set(6, 1);
+    data.set(7, 10);
+    data.set(8, 9);
+    data.set(9, 4);
+    
 
     bubble_sort(data);
 
