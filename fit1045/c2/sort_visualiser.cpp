@@ -110,7 +110,7 @@ int main()
 {
     while (!quit_requested())
     {
-        open_window("Sort visualiser", SCREEN_WIDTH, SCREEN_HEIGHT);
+        open_window("Martin's sort visualiser", SCREEN_WIDTH, SCREEN_HEIGHT);
 
         fixed_array<int, DATA_SIZE> data;
 
