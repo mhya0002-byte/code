@@ -9,9 +9,10 @@ const int SCREEN_HEIGHT = 720;
 
 const int MARGIN = 10;
 
+const color BACKGROUND_COLOUR = color_black();
 const color OUTLINE_COLOUR = color_light_blue();
 const color FILL_COLOUR = color_dark_blue();
-
+const color HIGHLIGHT_COLOUR = color_yellow();
 
 void swap(int i1, int i2, fixed_array<int, DATA_SIZE> &data)
 {
@@ -24,12 +25,12 @@ void swap(int i1, int i2, fixed_array<int, DATA_SIZE> &data)
     data.set(i2, temp);
 }
 
-void visualise_array(const fixed_array<int, DATA_SIZE> &data)
+void visualise_array(const fixed_array<int, DATA_SIZE> &data, int highlight_index)
 {
     double bar_distance = SCREEN_WIDTH / DATA_SIZE;
     double bar_width = bar_distance - MARGIN * 2;
 
-    clear_screen();
+    clear_screen(BACKGROUND_COLOUR);
 
     for (int i = 0; i < DATA_SIZE; i++)
     {
@@ -37,7 +38,9 @@ void visualise_array(const fixed_array<int, DATA_SIZE> &data)
         double x = i * bar_distance + MARGIN;
         double y = SCREEN_HEIGHT - bar_height;
 
-        fill_rectangle(FILL_COLOUR, x, y, bar_width, bar_height);
+        color selected_colour = (i == highlight_index or i == highlight_index + 1) ? HIGHLIGHT_COLOUR : FILL_COLOUR;
+
+        fill_rectangle(selected_colour, x, y, bar_width, bar_height);
         draw_rectangle(OUTLINE_COLOUR, x, y, bar_width, bar_height);
     }
 
@@ -52,8 +55,8 @@ void bubble_sort_pass(fixed_array<int, DATA_SIZE> &data, int range)
         {
             swap(i, i + 1, data);
         }
-        visualise_array(data);
-        delay(50);
+        visualise_array(data, i);
+        delay(100);
     }
 }
 
@@ -65,23 +68,21 @@ void bubble_sort(fixed_array<int, DATA_SIZE> &data)
     }
 }
 
+void fill_array_random(fixed_array<int, DATA_SIZE> &data, int min, int max)
+{
+    for (int i = 0; i < DATA_SIZE; i++)
+    {
+        data.set(i, rnd(min, max));
+    }
+}
+
 int main()
 {
     open_window("Sort visualiser", SCREEN_WIDTH, SCREEN_HEIGHT);
 
     fixed_array<int, DATA_SIZE> data;
 
-    data.set(0, 6);
-    data.set(1, 5);
-    data.set(2, 8);
-    data.set(3, 3);
-    data.set(4, 7);
-    data.set(5, 2);
-    data.set(6, 1);
-    data.set(7, 10);
-    data.set(8, 9);
-    data.set(9, 4);
-    
+    fill_array_random(data, 1, 10);
 
     bubble_sort(data);
 
