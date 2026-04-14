@@ -23,10 +23,11 @@ fixed_array<int, DATA_SIZE> shuffled_list()
     }
 
     int rand_value;
+    int rand_index;
 
     for (int i = 0; i < DATA_SIZE - 1; i++)
     {
-        int rand_index = rnd(0, length(temp_array));
+        rand_index = rnd(0, length(temp_array) - 1);
         rand_value = temp_array.get(rand_index);
         temp_array.remove(rand_index);
         shuffled_array.set(i, rand_value);
