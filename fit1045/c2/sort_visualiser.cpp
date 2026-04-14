@@ -1,18 +1,30 @@
 #include "splashkit.h"
 #include "splashkit-arrays.h"
 
-const int DATA_SIZE = 10;
-const double MAX_VALUE = DATA_SIZE;
+const int DATA_SIZE = 100;
 
-const int SCREEN_WIDTH = 1280;
-const int SCREEN_HEIGHT = 720;
+const double SCREEN_WIDTH = 1280;
+const double SCREEN_HEIGHT = 720;
 
-const int MARGIN = 10;
+const double MARGIN = 10;
 
 const color BACKGROUND_COLOUR = color_black();
 const color OUTLINE_COLOUR = color_light_blue();
 const color FILL_COLOUR = color_dark_blue();
 const color HIGHLIGHT_COLOUR = color_yellow();
+
+int max(fixed_array<int, DATA_SIZE> data)
+{
+    int current_max = 0;
+    for (int i = 0; i < length(data); i++)
+    {
+        if (data[i] > current_max)
+        {
+            current_max = data[i];
+        }
+    }
+    return current_max;
+}
 
 void swap(int i1, int i2, fixed_array<int, DATA_SIZE> &data)
 {
@@ -28,13 +40,14 @@ void swap(int i1, int i2, fixed_array<int, DATA_SIZE> &data)
 void visualise_array(const fixed_array<int, DATA_SIZE> &data, int highlight_index)
 {
     double bar_distance = SCREEN_WIDTH / DATA_SIZE;
-    double bar_width = bar_distance - MARGIN * 2;
+    double bar_width = bar_distance - (MARGIN * 2);
 
     clear_screen(BACKGROUND_COLOUR);
 
     for (int i = 0; i < DATA_SIZE; i++)
     {
-        double bar_height = data.get(i) / MAX_VALUE * SCREEN_HEIGHT;
+        double max_value = max(data);
+        double bar_height = data.get(i) / max_value * SCREEN_HEIGHT;
         double x = i * bar_distance + MARGIN;
         double y = SCREEN_HEIGHT - bar_height;
 
