@@ -39,26 +39,26 @@ thisPollTime = lastPollTime
 us1Data = [10, 0]
 us2Data = [10, 0]
 
-def TL1Off():
+def tl1_off():
     for i in range(3):
         board.digital_pin_write(outputPins[i], 0)
 
-def TL2Off():
+def tl2_off():
     for i in range(3, 6):
         board.digital_pin_write(outputPins[i], 0)
 
-def zeroOutputs():
-    TL1Off()
-    TL2Off()
+def zero_outputs():
+    tl1_off()
+    tl2_off()
     board.digital_pin_write(wl1FirstLight, 0)
     board.digital_pin_write(wl1SecondLight, 0)
 
-zeroOutputs()
+zero_outputs()
 
-def setColour(light, colour):
+def set_colour(light, colour):
     
     if light == 1:
-        TL1Off()
+        tl1_off()
         if colour == "green":
             board.digital_pin_write(tl1Green, 1)
         elif colour == "yellow":
@@ -66,7 +66,7 @@ def setColour(light, colour):
         elif colour == "red":
             board.digital_pin_write(tl1Red, 1)
     elif light == 2:
-        TL2Off()
+        tl2_off()
         if colour == "green":
             board.digital_pin_write(tl2Green, 1)
         elif colour == "yellow":
@@ -74,8 +74,8 @@ def setColour(light, colour):
         elif colour == "red":
             board.digital_pin_write(tl2Red, 1)
 
-setColour(1, "green")
-setColour(2, "green")
+set_colour(1, "green")
+set_colour(2, "green")
 
 us1CycleActive = False
 us2CycleActive = False
@@ -112,32 +112,32 @@ try:
 
             if us1CycleActive:
                 if time.time() < us1StartTime + 1:
-                    setColour(1, "yellow")
+                    set_colour(1, "yellow")
                 if time.time() >= us1StartTime + 1:
-                    setColour(1, "red")
+                    set_colour(1, "red")
                 if time.time() >= us1StartTime + 6:
-                    setColour(1, "green")
+                    set_colour(1, "green")
                     us1CycleActive = False
             
             if us2CycleActive:
                 if time.time() < us2StartTime + 1:
-                    setColour(2, "yellow")
+                    set_colour(2, "yellow")
                 if time.time() >= us2StartTime + 1:
-                    setColour(2, "red")
+                    set_colour(2, "red")
                 if time.time() >= us2StartTime + 6:
-                    setColour(2, "green")
+                    set_colour(2, "green")
                     us2CycleActive = False
 
             if dualCycleActive:
                 if time.time() < dualStartTime + 1:
-                    setColour(1, "yellow")
-                    setColour(2, "yellow")
+                    set_colour(1, "yellow")
+                    set_colour(2, "yellow")
                 if time.time() >= dualStartTime + 1:
-                    setColour(1, "red")
-                    setColour(2, "red")
+                    set_colour(1, "red")
+                    set_colour(2, "red")
                 if time.time() >= dualStartTime + 6:
-                    setColour(1, "green")
-                    setColour(2, "green")
+                    set_colour(1, "green")
+                    set_colour(2, "green")
                     dualCycleActive = False
 
             if us1CycleActive or us2CycleActive or dualCycleActive:
@@ -153,7 +153,7 @@ try:
         
 except KeyboardInterrupt:
     time.sleep(1)
-    zeroOutputs()
+    zero_outputs()
     time.sleep(1)
     board.shutdown()
     time.sleep(1)
