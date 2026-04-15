@@ -10,20 +10,20 @@ except ValueError:
 
 sensorHeight = 10
 
-us1Trig    = 2
-us1Echo    = 3
-tl1Green   = 4
-tl1Yellow  = 5
-tl1Red     = 6
+us1Trig         = 2
+us1Echo         = 3
+tl1Green        = 4
+tl1Yellow       = 5
+tl1Red          = 6
 
-us2Trig    = 7
-us2Echo    = 8
-tl2Green   = 9
-tl2Yellow  = 10
-tl2Red     = 11
+us2Trig         = 7
+us2Echo         = 8
+tl2Green        = 9
+tl2Yellow       = 10
+tl2Red          = 11
 
-wl1FirstLight       = 12
-wl1SecondLight       = 13
+wl1FirstLight   = 12
+wl1SecondLight  = 13
 
 outputPins = [tl1Green, tl1Yellow, tl1Red, tl2Green, tl2Yellow, tl2Red, wl1FirstLight, wl1SecondLight]
 
@@ -87,22 +87,41 @@ us1StartTime = 0
 
 threshold = 5
 
+movingAverageSize = 3
+
+us1History = []
+us2History = []
+
 try:
     while True:
-
         thisPollTime = time.time()
+
         if thisPollTime - lastPollTime >= pollInterval:
-            us1Data = board.sonar_read(us1Trig)
-            us2Data = board.sonar_read(us2Trig)
+            us1Data = board.sonar_read(us1Trig)[0]
+            us2Data = board.sonar_read(us2Trig)[0]
+            
+            us1History.append(us1Data)
+            us2History.append(us2Data)
+
+            if len(us1History) > movingAverageSize:
+                us1History.pop(0)
+
+            if len(us2History) > movingAverageSize:
+                us2History.pop(0)
+
+            us1Data = sum(us1History) / len(us1History)
+            us2Data = sum(us2History) / len(us2History)
+
             lastPollTime = thisPollTime
-            if (us1Data[0] <= (sensorHeight - overheightLimit)):
-                print("Overheight vehicle detected! Height: " + str(sensorHeight - us1Data[0]) + " Time: " + time.asctime())
+
+            if (us1Data <= (sensorHeight - overheightLimit)):
+                print("Overheight vehicle detected! Height: " + str(round(sensorHeight - us1Data, 2)) + "m, Time: " + time.asctime())
 
                 if us1CycleActive == False:
                     us1CycleActive = True
                     us1StartTime = time.time()
 
-            if (us2Data[0] <= (sensorHeight - overheightLimit)):
+            if (us2Data <= (sensorHeight - overheightLimit)):
                 if (time.time() - us1StartTime) >= threshold:
                     if dualCycleActive == False:
                         dualCycleActive = True
