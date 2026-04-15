@@ -4,49 +4,54 @@ import time
 board = pymata4.Pymata4()
 
 try:
-    overheight_limit = int(input("Enter the overheight limit in m: "))
+    overheightLimit = int(input("Enter the overheight limit in m: "))
 except ValueError:
-    overheight_limit = 4
+    overheightLimit = 4
 
-us1_trig    = 2
-us1_echo    = 3
-tl1_green   = 4
-tl1_yellow  = 5
-tl1_red     = 6
+us1Trig    = 2
+us1Echo    = 3
+tl1Green   = 4
+tl1Yellow  = 5
+tl1Red     = 6
 
-us2_trig    = 7
-us2_echo    = 8
-tl2_green   = 9
-tl2_yellow  = 10
-tl2_red     = 11
+us2Trig    = 7
+us2Echo    = 8
+tl2Green   = 9
+tl2Yellow  = 10
+tl2Red     = 11
 
-output_pins = [tl1_green, tl1_yellow, tl1_red, tl2_green, tl2_yellow, tl2_red]
+wl1FirstLight       = 12
+wl1SecondLight       = 13
 
-for pin in output_pins:
+outputPins = [tl1Green, tl1Yellow, tl1Red, tl2Green, tl2Yellow, tl2Red, wl1FirstLight, wl1SecondLight]
+
+for pin in outputPins:
     board.set_pin_mode_digital_output(pin)
 
-board.set_pin_mode_sonar(us1_trig, us1_echo)
+board.set_pin_mode_sonar(us1Trig, us1Echo)
 
-board.set_pin_mode_sonar(us2_trig, us2_echo)
+board.set_pin_mode_sonar(us2Trig, us2Echo)
 
 pollInterval = 0.25
 lastPollTime = time.time()
 thisPollTime = lastPollTime
 
-us1_data = [10, 0]
-us2_data = [10, 0]
+us1Data = [10, 0]
+us2Data = [10, 0]
 
 def TL1Off():
     for i in range(3):
-        board.digital_pin_write(output_pins[i], 0)
+        board.digital_pin_write(outputPins[i], 0)
 
 def TL2Off():
     for i in range(3, 6):
-        board.digital_pin_write(output_pins[i], 0)
+        board.digital_pin_write(outputPins[i], 0)
 
 def zeroOutputs():
     TL1Off()
     TL2Off()
+    board.digital_pin_write(wl1FirstLight, 0)
+    board.digital_pin_write(wl1SecondLight, 0)
 
 zeroOutputs()
 
@@ -55,19 +60,19 @@ def setColour(light, colour):
     if light == 1:
         TL1Off()
         if colour == "green":
-            board.digital_pin_write(tl1_green, 1)
+            board.digital_pin_write(tl1Green, 1)
         elif colour == "yellow":
-            board.digital_pin_write(tl1_yellow, 1)
+            board.digital_pin_write(tl1Yellow, 1)
         elif colour == "red":
-            board.digital_pin_write(tl1_red, 1)
+            board.digital_pin_write(tl1Red, 1)
     elif light == 2:
         TL2Off()
         if colour == "green":
-            board.digital_pin_write(tl2_green, 1)
+            board.digital_pin_write(tl2Green, 1)
         elif colour == "yellow":
-            board.digital_pin_write(tl2_yellow, 1)
+            board.digital_pin_write(tl2Yellow, 1)
         elif colour == "red":
-            board.digital_pin_write(tl2_red, 1)
+            board.digital_pin_write(tl2Red, 1)
 
 setColour(1, "green")
 setColour(2, "green")
@@ -85,17 +90,17 @@ try:
 
         thisPollTime = time.time()
         if thisPollTime - lastPollTime >= pollInterval:
-            us1_data = board.sonar_read(us1_trig)
-            us2_data = board.sonar_read(us2_trig)
+            us1Data = board.sonar_read(us1Trig)
+            us2Data = board.sonar_read(us2Trig)
             lastPollTime = thisPollTime
-            if (us1_data[0] <= (10 - overheight_limit)):
-                print("Overheight vehicle detected! Height: " + str(10 - us1_data[0]) + " Time: " + time.asctime())
+            if (us1Data[0] <= (10 - overheightLimit)):
+                print("Overheight vehicle detected! Height: " + str(10 - us1Data[0]) + " Time: " + time.asctime())
 
                 if us1CycleActive == False:
                     us1CycleActive = True
                     us1StartTime = time.time()
 
-            if (us2_data[0] <= (10 - overheight_limit)):
+            if (us2Data[0] <= (10 - overheightLimit)):
                 if (time.time() - us1StartTime) >= threshold:
                     if dualCycleActive == False:
                         dualCycleActive = True
@@ -105,7 +110,7 @@ try:
                     us2CycleActive = True
                     us2StartTime = time.time()
 
-            if us1CycleActive == True:
+            if us1CycleActive:
                 if time.time() < us1StartTime + 1:
                     setColour(1, "yellow")
                 if time.time() >= us1StartTime + 1:
@@ -114,7 +119,7 @@ try:
                     setColour(1, "green")
                     us1CycleActive = False
             
-            if us2CycleActive == True:
+            if us2CycleActive:
                 if time.time() < us2StartTime + 1:
                     setColour(2, "yellow")
                 if time.time() >= us2StartTime + 1:
@@ -123,7 +128,7 @@ try:
                     setColour(2, "green")
                     us2CycleActive = False
 
-            if dualCycleActive == True:
+            if dualCycleActive:
                 if time.time() < dualStartTime + 1:
                     setColour(1, "yellow")
                     setColour(2, "yellow")
@@ -134,6 +139,14 @@ try:
                     setColour(1, "green")
                     setColour(2, "green")
                     dualCycleActive = False
+
+            if us1CycleActive or us2CycleActive or dualCycleActive:
+                wl1State = round(((4 * time.time()) % 2) / 2)
+                board.digital_pin_write(wl1FirstLight, wl1State)
+                board.digital_pin_write(wl1SecondLight, 1 - wl1State)
+            else:
+                board.digital_pin_write(wl1FirstLight, 0)
+                board.digital_pin_write(wl1SecondLight, 0)
 
                 
         time.sleep(0.001)
