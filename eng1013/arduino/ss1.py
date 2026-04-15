@@ -8,6 +8,8 @@ try:
 except ValueError:
     overheightLimit = 4
 
+sensorHeight = 10
+
 us1Trig    = 2
 us1Echo    = 3
 tl1Green   = 4
@@ -36,8 +38,8 @@ pollInterval = 0.25
 lastPollTime = time.time()
 thisPollTime = lastPollTime
 
-us1Data = [10, 0]
-us2Data = [10, 0]
+us1Data = [sensorHeight, 0]
+us2Data = [sensorHeight, 0]
 
 def tl1_off():
     for i in range(3):
@@ -93,14 +95,14 @@ try:
             us1Data = board.sonar_read(us1Trig)
             us2Data = board.sonar_read(us2Trig)
             lastPollTime = thisPollTime
-            if (us1Data[0] <= (10 - overheightLimit)):
-                print("Overheight vehicle detected! Height: " + str(10 - us1Data[0]) + " Time: " + time.asctime())
+            if (us1Data[0] <= (sensorHeight - overheightLimit)):
+                print("Overheight vehicle detected! Height: " + str(sensorHeight - us1Data[0]) + " Time: " + time.asctime())
 
                 if us1CycleActive == False:
                     us1CycleActive = True
                     us1StartTime = time.time()
 
-            if (us2Data[0] <= (10 - overheightLimit)):
+            if (us2Data[0] <= (sensorHeight - overheightLimit)):
                 if (time.time() - us1StartTime) >= threshold:
                     if dualCycleActive == False:
                         dualCycleActive = True
