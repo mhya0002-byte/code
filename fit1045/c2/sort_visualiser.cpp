@@ -113,9 +113,6 @@ int partition(fixed_array<int, DATA_SIZE> &data, int low, int high)
     // Put pivot to its position
     swap(i + 1, high, data);
 
-    visualise_array(data, pivot, 1);
-    delay(100);
-
     // Return the point of partition
     return (i + 1);
 }
