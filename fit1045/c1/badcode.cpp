@@ -14,7 +14,8 @@ int main()
     int spider_x = SCREEN_WIDTH / 2;
     int spider_y = SCREEN_HEIGHT / 2;
 
-    int fly_x = rnd(800), fly_y = rnd(600);
+    int fly_x = rnd(800);
+    int fly_y = rnd(600);
     bool fly_appeared = false;
     long time_to_appear = 1000 + rnd(2000);
 
