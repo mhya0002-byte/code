@@ -44,7 +44,7 @@ void visualise_array(const fixed_array<int, DATA_SIZE> &data, int highlight_inde
 
     clear_screen(BACKGROUND_COLOUR);
 
-    string text = algorithm == 0 ? "Bubble Sort" : "Insertion Sort";
+    string text = algorithm == 0 ? "Bubble Sort" : "Quick Sort";
 
     draw_text(text, HIGHLIGHT_COLOUR, 0, 0);
 
@@ -55,7 +55,7 @@ void visualise_array(const fixed_array<int, DATA_SIZE> &data, int highlight_inde
         double x = i * bar_distance + MARGIN;
         double y = SCREEN_HEIGHT - bar_height;
 
-        color selected_colour = (i == highlight_index or i == highlight_index + 1) ? HIGHLIGHT_COLOUR : FILL_COLOUR;
+        color selected_colour = (i == highlight_index or (i == highlight_index + 1 and algorithm == 0)) ? HIGHLIGHT_COLOUR : FILL_COLOUR;
 
         fill_rectangle(selected_colour, x, y, bar_width, bar_height);
         draw_rectangle(OUTLINE_COLOUR, x, y, bar_width, bar_height);
@@ -85,16 +85,57 @@ void bubble_sort(fixed_array<int, DATA_SIZE> &data)
     }
 }
 
-void insertion_sort(fixed_array<int, DATA_SIZE> &data)
+int partition(fixed_array<int, DATA_SIZE> &data, int low, int high)
 {
-    for (int i = 0; i < length(data); i++)
+
+    // Selecting last element as the pivot
+    int pivot = data[high];
+
+    // Index of element just before the last element
+    // It is used for swapping
+    int i = (low - 1);
+
+    for (int j = low; j <= high - 1; j++)
     {
-        for (int j = i; j > 0 and data.get(j - 1) > data.get(j); j--)
+
+        // If current element is smaller than or
+        // equal to pivot
+        if (data[j] <= pivot)
         {
-            swap(j, j - 1, data);
-            visualise_array(data, j, 1);
-            delay(100);
+            i++;
+            swap(i, j, data);
+
+            visualise_array(data, pivot, 1);
+            delay(500);
         }
+    }
+
+    // Put pivot to its position
+    swap(i + 1, high, data);
+
+    visualise_array(data, pivot, 1);
+    delay(500);
+
+    // Return the point of partition
+    return (i + 1);
+}
+
+void quick_sort(fixed_array<int, DATA_SIZE> &data, int low, int high)
+{
+
+    // Base case: This part will be executed till the starting
+    // index low is lesser than the ending index high
+    if (low < high)
+    {
+
+        // pi is Partitioning Index, arr[p] is now at
+        // right place
+        int pi = partition(data, low, high);
+
+        // Separately sort elements before and after the
+        // Partition Index pi
+        quick_sort(data, low, pi - 1);
+        quick_sort(data, pi + 1, high);
     }
 }
 
@@ -117,12 +158,12 @@ int main()
         fill_array_random(data, 1, 10);
 
         bubble_sort(data);
-
+        
         delay(2000);
 
         fill_array_random(data, 1, 10);
 
-        insertion_sort(data);
+        quick_sort(data, 0, DATA_SIZE - 1);
 
         delay(2000);
 
