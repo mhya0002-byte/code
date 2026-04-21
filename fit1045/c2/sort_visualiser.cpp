@@ -44,7 +44,7 @@ void visualise_array(const fixed_array<int, DATA_SIZE> &data, int highlight_inde
 
     clear_screen(BACKGROUND_COLOUR);
 
-    string text = algorithm == 0 ? "Bubble Sort" : "Quick Sort";
+    string text = algorithm == 0 ? "Martin's sort visualiser - Bubble Sort" : "Martin's sort visualiser - Quick Sort";
 
     draw_text(text, HIGHLIGHT_COLOUR, 0, 0);
 
@@ -153,6 +153,8 @@ int main()
         fixed_array<int, DATA_SIZE> data;
 
         fill_array_random(data, 1, 10);
+
+        delay(10000);
 
         bubble_sort(data);
         
