@@ -3,20 +3,20 @@ import time
 board = pymata4.Pymata4()
     
 # pin setup
-srclr = 4
-ser = 5
-rclk = 6
-srclk = 7
+clear = 4
+input = 5
+output = 6
+shift = 7
     
 # pin mode configuration
-board.set_pin_mode_digital_output(srclr)
-board.set_pin_mode_digital_output(ser)
-board.set_pin_mode_digital_output(rclk)
-board.set_pin_mode_digital_output(srclk)
+board.set_pin_mode_digital_output(clear)
+board.set_pin_mode_digital_output(input)
+board.set_pin_mode_digital_output(output)
+board.set_pin_mode_digital_output(shift)
     
 # default pin states
-board.digital_write(srclk, 0)
-board.digital_write(rclk, 0)
+board.digital_write(shift, 0)
+board.digital_write(output, 0)
 
 
 def pulse(pin):
@@ -24,20 +24,20 @@ def pulse(pin):
     board.digital_write(pin, 0)
     
 def clear():
-    board.digital_write(srclr, 0)
-    board.digital_write(srclr, 1)
-    pulse(rclk)
+    board.digital_write(clear, 0)
+    board.digital_write(clear, 1)
+    pulse(output)
 
 def write_register(state):
     for bit in state:
 
-        board.digital_write(ser, bit)
+        board.digital_write(input, bit)
 
         # push to storage register
-        pulse(srclk)
+        pulse(shift)
 
     # copy storage register to display outputs
-    pulse(rclk)
+    pulse(output)
 
 clear()
 
