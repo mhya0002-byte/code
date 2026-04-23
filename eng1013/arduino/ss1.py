@@ -11,11 +11,11 @@ except ValueError:
 ### Ultrasonic sensor initialisation
 sensorHeight = 10
 
-us1Trig         = 2
-us1Echo         = 3
+us1Trig         = 4
+us1Echo         = 5
 
-us2Trig         = 7
-us2Echo         = 8
+us2Trig         = 9
+us2Echo         = 10
 
 board.set_pin_mode_sonar(us1Trig, us1Echo)
 board.set_pin_mode_sonar(us2Trig, us2Echo)
@@ -68,13 +68,8 @@ def write_register(state):
     # copy storage register to display outputs
     pulse(registerOutputPin)
 
-def clear():
-    registerPinState = [0, 0, 0, 0, 0, 0, 0, 0]
-    write_register(registerPinState)
-
 def set_led(index, value):
     registerPinState[index] = value
-    write_register(registerPinState)
 
 def set_traffic_light(light, colour):
     match light:
@@ -96,8 +91,7 @@ def set_traffic_light(light, colour):
                     registerPinState[4] = 1
                 case "red":
                     registerPinState[5] = 1
-    write_register(registerPinState)
-
+    
 def set_warning_light(state):
     if state == "off":
         set_led(6, 0)
@@ -107,10 +101,11 @@ def set_warning_light(state):
         set_led(7, 1 - state)
 ###
 
-clear()
-
 set_traffic_light(1, "green")
 set_traffic_light(2, "green")
+set_warning_light("off")
+
+write_register(registerPinState)
 
 us1CycleActive = False
 us2CycleActive = False
@@ -129,11 +124,12 @@ pollInterval = 0.25
 lastPollTime = time.time()
 thisPollTime = lastPollTime
 
-try:
-    while True:
+while True:
+    try:
         thisPollTime = time.time()
 
         if thisPollTime - lastPollTime >= pollInterval:
+
             us1Data = board.sonar_read(us1Trig)[0]
             us2Data = board.sonar_read(us2Trig)[0]
             
@@ -203,15 +199,16 @@ try:
                 set_warning_light(wl1State)
             else:
                 set_warning_light("off")
+        
+            write_register(registerPinState)
+
 
                 
         time.sleep(0.001)
         
-except KeyboardInterrupt:
-    time.sleep(1)
-    clear()
-    time.sleep(1)
-    board.shutdown()
-    time.sleep(1)
-    exit()
+    except KeyboardInterrupt:
+        write_register([0, 0, 0, 0, 0, 0, 0, 0])
+        board.shutdown()
+        time.sleep(1)
+        exit()
     
