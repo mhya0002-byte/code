@@ -8,76 +8,109 @@ try:
 except ValueError:
     overheightLimit = 4
 
+### Ultrasonic sensor initialisation
 sensorHeight = 10
 
 us1Trig         = 2
 us1Echo         = 3
-tl1Green        = 4
-tl1Yellow       = 5
-tl1Red          = 6
 
 us2Trig         = 7
 us2Echo         = 8
-tl2Green        = 9
-tl2Yellow       = 10
-tl2Red          = 11
-
-wl1FirstLight   = 12
-wl1SecondLight  = 13
-
-outputPins = [tl1Green, tl1Yellow, tl1Red, tl2Green, tl2Yellow, tl2Red, wl1FirstLight, wl1SecondLight]
-
-for pin in outputPins:
-    board.set_pin_mode_digital_output(pin)
 
 board.set_pin_mode_sonar(us1Trig, us1Echo)
-
 board.set_pin_mode_sonar(us2Trig, us2Echo)
-
-pollInterval = 0.25
-lastPollTime = time.time()
-thisPollTime = lastPollTime
 
 us1Data = [sensorHeight, 0]
 us2Data = [sensorHeight, 0]
+###
 
-def tl1_off():
-    for i in range(3):
-        board.digital_pin_write(outputPins[i], 0)
+### Shift register initialisation
+#   VCC       5V
+#   QA
+#   INPUT
+#   OE        GND
+#   OUTPUT
+#   SHIFT
+#   CLEAR     5V
+#   QH'
 
-def tl2_off():
-    for i in range(3, 6):
-        board.digital_pin_write(outputPins[i], 0)
+# TL1 green yellow red = outputs a b c
+# TL2 green yellow red = outputs d e f
+# WL1 lights = outputs g h
 
-def zero_outputs():
-    tl1_off()
-    tl2_off()
-    board.digital_pin_write(wl1FirstLight, 0)
-    board.digital_pin_write(wl1SecondLight, 0)
-
-zero_outputs()
-
-def set_colour(light, colour):
+registerInputPin = 8
+registerOutputPin = 7
+registerShiftPin = 6
     
-    if light == 1:
-        tl1_off()
-        if colour == "green":
-            board.digital_pin_write(tl1Green, 1)
-        elif colour == "yellow":
-            board.digital_pin_write(tl1Yellow, 1)
-        elif colour == "red":
-            board.digital_pin_write(tl1Red, 1)
-    elif light == 2:
-        tl2_off()
-        if colour == "green":
-            board.digital_pin_write(tl2Green, 1)
-        elif colour == "yellow":
-            board.digital_pin_write(tl2Yellow, 1)
-        elif colour == "red":
-            board.digital_pin_write(tl2Red, 1)
+board.set_pin_mode_digital_output(registerInputPin)
+board.set_pin_mode_digital_output(registerOutputPin)
+board.set_pin_mode_digital_output(registerShiftPin)
+    
+# default pin states
+board.digital_write(registerInputPin, 0)
+board.digital_write(registerOutputPin, 0)
+board.digital_write(registerShiftPin, 0)
 
-set_colour(1, "green")
-set_colour(2, "green")
+registerPinState = [0, 0, 0, 0, 0, 0, 0, 0]
+
+def pulse(pin):
+    board.digital_write(pin, 1)
+    board.digital_write(pin, 0)
+    
+def write_register(state):
+    for bit in reversed(state):
+
+        board.digital_write(registerInputPin, bit)
+
+        # push to storage register
+        pulse(registerShiftPin)
+
+    # copy storage register to display outputs
+    pulse(registerOutputPin)
+
+def clear():
+    registerPinState = [0, 0, 0, 0, 0, 0, 0, 0]
+    write_register(registerPinState)
+
+def set_led(index, value):
+    registerPinState[index] = value
+    write_register(registerPinState)
+
+def set_traffic_light(light, colour):
+    match light:
+        case 1:
+            registerPinState[0:3] = [0, 0, 0]
+            match colour:
+                case "green":
+                    registerPinState[0] = 1
+                case "yellow":
+                    registerPinState[1] = 1
+                case "red":
+                    registerPinState[2] = 1
+        case 2:
+            registerPinState[3:3] = [0, 0, 0]
+            match colour:
+                case "green":
+                    registerPinState[3] = 1
+                case "yellow":
+                    registerPinState[4] = 1
+                case "red":
+                    registerPinState[5] = 1
+    write_register(registerPinState)
+
+def set_warning_light(state):
+    if state == "off":
+        set_led(6, 0)
+        set_led(7, 0)
+    else:
+        set_led(6, state)
+        set_led(7, 1 - state)
+###
+
+clear()
+
+set_traffic_light(1, "green")
+set_traffic_light(2, "green")
 
 us1CycleActive = False
 us2CycleActive = False
@@ -91,6 +124,10 @@ movingAverageSize = 3
 
 us1History = []
 us2History = []
+
+pollInterval = 0.25
+lastPollTime = time.time()
+thisPollTime = lastPollTime
 
 try:
     while True:
@@ -133,48 +170,46 @@ try:
 
             if us1CycleActive:
                 if time.time() < us1StartTime + 1:
-                    set_colour(1, "yellow")
+                    set_traffic_light(1, "yellow")
                 if time.time() >= us1StartTime + 1:
-                    set_colour(1, "red")
+                    set_traffic_light(1, "red")
                 if time.time() >= us1StartTime + 6:
-                    set_colour(1, "green")
+                    set_traffic_light(1, "green")
                     us1CycleActive = False
             
             if us2CycleActive:
                 if time.time() < us2StartTime + 1:
-                    set_colour(2, "yellow")
+                    set_traffic_light(2, "yellow")
                 if time.time() >= us2StartTime + 1:
-                    set_colour(2, "red")
+                    set_traffic_light(2, "red")
                 if time.time() >= us2StartTime + 6:
-                    set_colour(2, "green")
+                    set_traffic_light(2, "green")
                     us2CycleActive = False
 
             if dualCycleActive:
                 if time.time() < dualStartTime + 1:
-                    set_colour(1, "yellow")
-                    set_colour(2, "yellow")
+                    set_traffic_light(1, "yellow")
+                    set_traffic_light(2, "yellow")
                 if time.time() >= dualStartTime + 1:
-                    set_colour(1, "red")
-                    set_colour(2, "red")
+                    set_traffic_light(1, "red")
+                    set_traffic_light(2, "red")
                 if time.time() >= dualStartTime + 6:
-                    set_colour(1, "green")
-                    set_colour(2, "green")
+                    set_traffic_light(1, "green")
+                    set_traffic_light(2, "green")
                     dualCycleActive = False
 
             if us1CycleActive or us2CycleActive or dualCycleActive:
                 wl1State = round(((4 * time.time()) % 2) / 2)
-                board.digital_pin_write(wl1FirstLight, wl1State)
-                board.digital_pin_write(wl1SecondLight, 1 - wl1State)
+                set_warning_light(wl1State)
             else:
-                board.digital_pin_write(wl1FirstLight, 0)
-                board.digital_pin_write(wl1SecondLight, 0)
+                set_warning_light("off")
 
                 
         time.sleep(0.001)
         
 except KeyboardInterrupt:
     time.sleep(1)
-    zero_outputs()
+    clear()
     time.sleep(1)
     board.shutdown()
     time.sleep(1)
