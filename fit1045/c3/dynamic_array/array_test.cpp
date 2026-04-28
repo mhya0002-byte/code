@@ -17,11 +17,10 @@ int main()
     {
         numbers[-1] = 5;
     }
-    catch(array_invalid_index)
+    catch (array_invalid_index)
     {
         write_line("Invalid index for assignment!");
     }
-    
 
     numbers.remove(1);
 
@@ -29,19 +28,18 @@ int main()
     {
         numbers.remove(-2);
     }
-    catch(array_invalid_index)
+    catch (array_invalid_index)
     {
         write_line("Invalid index for removal!");
     }
 
-    
     numbers.fill(3, 67);
 
-        try
+    try
     {
         numbers.fill(100, 67);
     }
-    catch(array_full)
+    catch (array_full)
     {
         write_line("Array full!");
     }
