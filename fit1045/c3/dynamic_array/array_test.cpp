@@ -13,9 +13,38 @@ int main()
 
     numbers[2] = 67;
 
+    try
+    {
+        numbers[-1] = 5;
+    }
+    catch(array_invalid_index)
+    {
+        write_line("Invalid index for assignment!");
+    }
+    
+
     numbers.remove(1);
 
+    try
+    {
+        numbers.remove(-2);
+    }
+    catch(array_invalid_index)
+    {
+        write_line("Invalid index for removal!");
+    }
+
+    
     numbers.fill(3, 67);
+
+        try
+    {
+        numbers.fill(100, 67);
+    }
+    catch(array_full)
+    {
+        write_line("Array full!");
+    }
 
     for (int i = 0; i < numbers.length(); i++)
     {
