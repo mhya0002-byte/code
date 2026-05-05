@@ -54,7 +54,11 @@ public:
 
     const T &get(int index) const
     {
-        return get(index);
+        if (index < 0 || index >= size)
+        {
+            throw array_invalid_index();
+        }
+        return data[index];
     }
     T &operator[](int index)
     {
