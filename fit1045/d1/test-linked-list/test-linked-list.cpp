@@ -101,7 +101,6 @@ public:
             {
                 last = previous_node;
             }
-            
         }
 
         delete target_node;
@@ -152,8 +151,11 @@ void test_list()
 
     write("This should be 16: ");
     write_line(list.last->data);
+}
 
-    // ---- Test find_previous_node ----
+void test_find_previous()
+{
+    linked_list<int> list;
 
     node<int> *node_a = list.add_node(9);
     node<int> *node_b = list.add_node(18);
@@ -166,8 +168,11 @@ void test_list()
     {
         write_line("Found the wrong previous node");
     }
-    
-    list.clear();
+}
+
+void test_deletion()
+{
+    linked_list<int> list;
 
     node<int> *first_node = list.add_node(1);
     list.add_node(2);
@@ -197,7 +202,7 @@ void test_list()
 
 int main()
 {
-    // test_list();
-
-
+    test_list();
+    test_find_previous();
+    test_deletion();
 }
