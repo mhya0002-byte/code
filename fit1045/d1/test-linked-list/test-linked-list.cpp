@@ -22,7 +22,7 @@ public:
         last = nullptr;
     }
 
-    node<T> *add_node(T data)
+    node<T> *append_node(T data)
     {
         node<T> *new_node_ptr = new node<T>();
 
@@ -42,6 +42,8 @@ public:
 
         return new_node_ptr;
     }
+
+    // TO DO: ADD INSERT NODE FUNCTION
 
     node<T> *find_previous_node(node<T> *target_node)
     {
@@ -126,7 +128,7 @@ void test_list()
     linked_list<int> list;
 
     // ---- Test first node ----
-    node<int> *first_node = list.add_node(2);
+    node<int> *first_node = list.append_node(2);
 
     write("This should be 2: ");
     write_line(list.first->data);
@@ -139,9 +141,9 @@ void test_list()
 
     // ---- Test adding more nodes ----
 
-    list.add_node(4);
-    list.add_node(8);
-    list.add_node(16);
+    list.append_node(4);
+    list.append_node(8);
+    list.append_node(16);
 
     write("This should be 4: ");
     write_line(list.first->next->data);
@@ -157,8 +159,8 @@ void test_find_previous()
 {
     linked_list<int> list;
 
-    node<int> *node_a = list.add_node(9);
-    node<int> *node_b = list.add_node(18);
+    node<int> *node_a = list.append_node(9);
+    node<int> *node_b = list.append_node(18);
 
     if (list.find_previous_node(node_b) == node_a)
     {
@@ -174,11 +176,11 @@ void test_deletion()
 {
     linked_list<int> list;
 
-    node<int> *first_node = list.add_node(1);
-    list.add_node(2);
-    node<int> *third_node = list.add_node(3);
-    list.add_node(4);
-    list.add_node(5);
+    node<int> *first_node = list.append_node(1);
+    list.append_node(2);
+    node<int> *third_node = list.append_node(3);
+    list.append_node(4);
+    list.append_node(5);
 
     write_line("Testing deletion:");
     write_line("List contents: (Should be 1 2 3 4 5)");
