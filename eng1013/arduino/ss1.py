@@ -101,6 +101,14 @@ def set_warning_light(state):
         set_led(7, 1 - state)
 ###
 
+### Buzzer initialisation
+buzzerLowPin = 14   # Pin A0
+buzzerHighPin = 15  # Pin A1
+    
+board.set_pin_mode_digital_output(buzzerLowPin)
+board.set_pin_mode_digital_output(buzzerHighPin)
+###
+
 set_traffic_light(1, "green")
 set_traffic_light(2, "green")
 set_warning_light("off")
