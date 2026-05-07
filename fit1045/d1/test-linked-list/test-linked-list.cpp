@@ -43,8 +43,6 @@ public:
         return new_node_ptr;
     }
 
-    // TO DO: ADD INSERT NODE FUNCTION
-
     node<T> *find_previous_node(node<T> *target_node)
     {
         if (target_node == first)
@@ -66,6 +64,18 @@ public:
         }
 
         throw string("find_previous_node search failed: node not in list.");
+    }
+
+    node<T> *insert_after_node(T data, node<T> *target_node)
+    {
+        node<T> *new_node_ptr = new node<T>();
+
+        new_node_ptr->data = data;
+        new_node_ptr->next = target_node->next;
+
+        target_node->next = new_node_ptr;
+
+        return new_node_ptr;
     }
 
     void clear()
@@ -202,9 +212,31 @@ void test_deletion()
     list.print();
 }
 
+void test_insert()
+{
+    linked_list<int> list;
+
+    write_line("Initial list: ");
+
+    node<int> *first_node = list.append_node(1);
+    list.append_node(2);
+    node<int> *third_node = list.append_node(3);
+
+    list.print();
+
+    list.insert_after_node(67, first_node);
+
+    write_line("Insert 67 after 1: ");
+
+    list.print();
+
+    list.insert_after_node(67, third_node);
+
+    write_line("Insert 67 after 3: ");
+
+    list.print();
+}
+
 int main()
 {
-    test_list();
-    test_find_previous();
-    test_deletion();
 }
