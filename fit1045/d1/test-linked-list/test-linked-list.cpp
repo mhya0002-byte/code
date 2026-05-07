@@ -43,6 +43,23 @@ public:
         return new_node_ptr;
     }
 
+    node<T> *prepend_node(T data)
+    {
+        node<T> *new_node_ptr = new node<T>();
+
+        new_node_ptr->data = data;
+        new_node_ptr->next = first;
+
+        first = new_node_ptr;
+
+        if (last == nullptr)
+        {
+            last = new_node_ptr;
+        }
+
+        return new_node_ptr;
+    }
+
     node<T> *find_previous_node(node<T> *target_node)
     {
         if (target_node == first)
@@ -66,6 +83,18 @@ public:
         throw string("find_previous_node search failed: node not in list.");
     }
 
+    node<T> *node_at_index(int index)
+    {
+        node<T> *current = first;
+
+        for (int i = 0; i < index - 1; i++)
+        {
+            current = current->next;
+        }
+
+        return current;
+    }
+
     node<T> *insert_after_node(T data, node<T> *target_node)
     {
         node<T> *new_node_ptr = new node<T>();
@@ -74,6 +103,19 @@ public:
         new_node_ptr->next = target_node->next;
 
         target_node->next = new_node_ptr;
+
+        return new_node_ptr;
+    }
+
+    node<T> *insert_before_node(T data, node<T> *target_node)
+    {
+        node<T> *new_node_ptr = new node<T>();
+
+        new_node_ptr->data = data;
+
+        find_previous_node(target_node)->next = new_node_ptr;
+
+        new_node_ptr->next = target_node;
 
         return new_node_ptr;
     }
@@ -120,16 +162,21 @@ public:
 
     void print()
     {
+        int i = 1;
+
         node<T> *current = first;
 
         while (current != nullptr)
         {
             node<T> *next = current->next;
 
-            write_line(to_string(current->data));
+            write_line(to_string(i) + ": " + to_string(current->data));
 
             current = next;
+
+            i++;
         }
+        write_line();
     }
 };
 
@@ -239,4 +286,62 @@ void test_insert()
 
 int main()
 {
+    linked_list<int> list;
+
+    int data_input;
+    int index_input;
+
+    while (true)
+    {
+        {
+
+            write_line("1: Print list");
+            write_line("2: Append value");
+            write_line("3: Prepend value");
+            write_line("4: Insert before node");
+            write_line("5: Insert after node");
+            write_line("6: Delete value");
+
+            int menu_selection = read_integer_range("Enter Option: ", 1, 6);
+
+            write_line();
+
+            switch (menu_selection)
+            {
+            case 1:
+                list.print();
+                break;
+
+            case 2:
+                data_input = read_integer("Value to append: ");
+                list.append_node(data_input);
+                break;
+
+            case 3:
+                data_input = read_integer("Value to prepend: ");
+                list.prepend_node(data_input);
+                break;
+
+            case 4:
+                data_input = read_integer("Which value to insert? ");
+                list.print();
+                index_input = read_integer("Insert before which node? ");
+                list.insert_before_node(data_input, list.node_at_index(index_input));
+                break;
+
+            case 5:
+                data_input = read_integer("Which value to insert? ");
+                list.print();
+                index_input = read_integer("Insert after which node? ");
+                list.insert_after_node(data_input, list.node_at_index(index_input));
+                break;
+
+            case 6:
+                list.print();
+                index_input = read_integer("Delete which node? ");
+                list.delete_node(list.node_at_index(index_input));
+                break;
+            }
+        }
+    }
 }
