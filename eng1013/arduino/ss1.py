@@ -1,7 +1,7 @@
 # This is the code for Subsystem 1, which detects the height of approaching vehicles and operates traffic lights and warning devices to prevent overheight vehicles from entering the tunnel.   
 # Created by Martin Hyatt
 # Created on Sat 4 April 2026
-# Version 1.9
+# Version 1.10
 
 from pymata4 import pymata4
 import time
@@ -175,7 +175,7 @@ us2CycleActive = False
 dualCycleActive = False
 
 # 
-us1StartTime = 0
+us1LastOverheightTime = 0
 
 # Average speed of vehicles on the highway in km/h (Arbitrarily chosen to be 100)
 highwaySpeed = 100
@@ -187,7 +187,7 @@ sensorSpacing = 500
 threshold = (sensorSpacing * 3.6) / highwaySpeed
 
 # The amount of past values to consider when calculating the moving average
-movingAverageSize = 5
+movingAverageSize = 3
 
 # History of the ultrasonic readings, used for calculating the moving average.
 us1History = []
@@ -226,15 +226,15 @@ while True:
             # If US1 detects an overheight vehicle, print an alert to the console and begin the light pattern for US1 if it has not already started
             if (us1Data <= (sensorHeight - overheightLimit)):
                 print("Overheight vehicle detected! Height: " + str(round(sensorHeight - us1Data, 2)) + "m, Time: " + time.asctime())
+                us1LastOverheightTime = time.time()
 
                 if us1CycleActive == False:
                     us1CycleActive = True
-                    us1StartTime = time.time()
 
             # If US2 detects an overheight vehicle:
             if (us2Data <= (sensorHeight - overheightLimit)):
                 # If US2 detects an overheight vehicle after the threshold time has passed (Assuming a different vehicle triggered US1, if any), start the pattern for both traffic lights
-                if (time.time() - us1StartTime) >= threshold:
+                if (time.time() - us1LastOverheightTime) >= threshold:
                     if dualCycleActive == False:
                         dualCycleActive = True
                         dualStartTime = time.time()
@@ -246,11 +246,11 @@ while True:
 
             # Set the lights to the correct colour depending on the time and the current pattern to be displayed
             if us1CycleActive:
-                if time.time() < us1StartTime + 1:
+                if time.time() < us1LastOverheightTime + 1:
                     set_traffic_light(1, "yellow")
-                if time.time() >= us1StartTime + 1:
+                if time.time() >= us1LastOverheightTime + 1:
                     set_traffic_light(1, "red")
-                if time.time() >= us1StartTime + 31:
+                if time.time() >= us1LastOverheightTime + 31:
                     set_traffic_light(1, "green")
                     us1CycleActive = False
             
@@ -290,6 +290,6 @@ while True:
     except KeyboardInterrupt:
         write_register([0, 0, 0, 0, 0, 0, 0, 0]) # Clear the register
         board.shutdown()
-        time.sleep(1)
-        exit()
+
+
     
