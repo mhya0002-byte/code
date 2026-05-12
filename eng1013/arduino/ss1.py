@@ -269,6 +269,7 @@ while True:
 
             # Set the lights to the correct colour depending on the time and the current pattern to be displayed
             if us1CycleActive:
+                buzzerTone = 0 # Low tone
                 if time.time() < us1LastOverheightTime + 1:
                     set_traffic_light(1, "yellow")
                 if time.time() >= us1LastOverheightTime + 1:
@@ -278,6 +279,7 @@ while True:
                     us1CycleActive = False
             
             if us2CycleActive:
+                buzzerTone = 0 # Low tone
                 if time.time() < us2StartTime + 1:
                     set_traffic_light(2, "yellow")
                 if time.time() >= us2StartTime + 1:
@@ -287,6 +289,7 @@ while True:
                     us2CycleActive = False
 
             if dualCycleActive:
+                buzzerTone = 0 # Low tone
                 if time.time() < dualStartTime + 1:
                     set_traffic_light(1, "yellow")
                     set_traffic_light(2, "yellow")
