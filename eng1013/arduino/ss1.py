@@ -1,7 +1,7 @@
 # This is the code for Subsystem 1, which detects the height of approaching vehicles and operates traffic lights and warning devices to prevent overheight vehicles from entering the tunnel.   
 # Created by Martin Hyatt
 # Created on Sat 4 April 2026
-# Version 1.10
+# Version 1.11
 
 from pymata4 import pymata4
 import time
