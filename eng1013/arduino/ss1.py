@@ -159,6 +159,25 @@ buzzerHighPin = 15  # Pin A1
     
 board.set_pin_mode_digital_output(buzzerLowPin)
 board.set_pin_mode_digital_output(buzzerHighPin)
+
+def set_buzzer(state):
+    """
+    Controls the state of the buzzer: Off, low tone, or high tone.
+        Parameters:
+            state (integer from -1 to 1): Determines the state to set the buzzer to. -1 is off, 0 is low tone, 1 is high tone.
+        Returns:
+            Nothing
+    """
+    if state == -1:
+        board.digital_pin_write(buzzerLowPin, 0)
+        board.digital_pin_write(buzzerHighPin, 0)
+    elif state == 0:
+        board.digital_pin_write(buzzerLowPin, 1)
+    elif state == 1:
+        board.digital_pin_write(buzzerHighPin, 1)
+
+# Buzzer starts off
+set_buzzer(-1)
 ###
 
 # Sets the initial state of the lights: Both traffic lights green and warning lights off.
@@ -174,7 +193,7 @@ us1CycleActive = False
 us2CycleActive = False
 dualCycleActive = False
 
-# 
+# Initialise this variable to 0 to ensure comparisons are correct when the program is first run
 us1LastOverheightTime = 0
 
 # Average speed of vehicles on the highway in km/h (Arbitrarily chosen to be 100)
