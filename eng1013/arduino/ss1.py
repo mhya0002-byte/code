@@ -204,8 +204,8 @@ sensorSpacing = 500
 threshold = (sensorSpacing * 3.6) / highwaySpeed
 
 # Output this data to the console
-print("Highway speed: " + str(highwaySpeed))
-print("Sensor spacing: " + str(sensorSpacing))
+print("Highway speed: " + str(highwaySpeed) + " km/h")
+print("Sensor spacing: " + str(sensorSpacing) + " m")
 print("Calculated time threshold: " + str(threshold) + " seconds")
 
 # The amount of past values to consider when calculating the moving average
