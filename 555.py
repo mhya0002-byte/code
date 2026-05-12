@@ -11,8 +11,8 @@ capacitors = [
 ]
 
 resistors = [
-100,
-220,
+#100,
+#220,
 330,
 1000,
 2000,
@@ -46,7 +46,7 @@ for c1 in capacitors:
 results = {}
 
 for item in data:
-    if 400 <= data[item][0] <= 800:
+    if 500 <= data[item][0] <= 2000:
         results[item] = data[item]
 
 
