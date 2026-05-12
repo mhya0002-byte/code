@@ -215,24 +215,18 @@ movingAverageSize = 3
 us1History = []
 us2History = []
 
-pollInterval = 0.25
-lastPollTime = time.time()
-thisPollTime = lastPollTime
+loopTime = 0.25
 
 while True:
     try:
+            time.sleep(loopTime)
 
-        # Write the current state of the 8 lights to the register
-        write_register(registerPinState)
+            # Write the current state of the 8 lights to the register
+            write_register(registerPinState)
 
-        # Set the buzzer to the currently active tone
-        set_buzzer(buzzerTone)
-        
-        thisPollTime = time.time()
+            # Set the buzzer to the currently active tone
+            set_buzzer(buzzerTone)
 
-        if thisPollTime - lastPollTime >= pollInterval:
-
-            lastPollTime = thisPollTime
 
             # Read height data from the sensors
             us1Data = board.sonar_read(us1Trig)[0]
@@ -312,8 +306,6 @@ while True:
                 set_warning_light(-1)
         
 
-       
-        time.sleep(0.001)
         
     except KeyboardInterrupt:
         write_register([0, 0, 0, 0, 0, 0, 0, 0]) # Clear the register
