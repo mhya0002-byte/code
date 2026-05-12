@@ -1,7 +1,7 @@
 # This is the code for Subsystem 1, which detects the height of approaching vehicles and operates traffic lights and warning devices to prevent overheight vehicles from entering the tunnel.   
 # Created by Martin Hyatt
 # Created on Sat 4 April 2026
-# Version 1.11
+# Version 1.12
 
 from pymata4 import pymata4
 import time
@@ -149,6 +149,7 @@ def set_warning_light(state):
         set_led(6, 0)
         set_led(7, 0)
     else:
+        # Both lights are always opposite states
         set_led(6, state)
         set_led(7, 1 - state)
 ###
@@ -177,16 +178,13 @@ def set_buzzer(state):
         board.digital_pin_write(buzzerHighPin, 1)
 
 # Buzzer starts off
-set_buzzer(-1)
+buzzerTone = -1
 ###
 
 # Sets the initial state of the lights: Both traffic lights green and warning lights off.
 set_traffic_light(1, "green")
 set_traffic_light(2, "green")
 set_warning_light(-1)
-
-# Writes the state of the lights to the register.
-write_register(registerPinState)
 
 # No light patterns are active when the subsystem is started
 us1CycleActive = False
@@ -205,6 +203,11 @@ sensorSpacing = 500
 # Time threshold in seconds within which US1 is considered to have detected an overheight vehicle (From 1.R3)
 threshold = (sensorSpacing * 3.6) / highwaySpeed
 
+# Output this data to the console
+print("Highway speed: " + highwaySpeed)
+print("Sensor spacing: " + sensorSpacing)
+print("Calculated time threshold: " + threshold + " seconds")
+
 # The amount of past values to consider when calculating the moving average
 movingAverageSize = 3
 
@@ -218,6 +221,13 @@ thisPollTime = lastPollTime
 
 while True:
     try:
+
+        # Write the current state of the 8 lights to the register
+        write_register(registerPinState)
+
+        # Set the buzzer to the currently active tone
+        set_buzzer(buzzerTone)
+        
         thisPollTime = time.time()
 
         if thisPollTime - lastPollTime >= pollInterval:
@@ -232,7 +242,7 @@ while True:
             us1History.append(us1Data)
             us2History.append(us2Data)
 
-            # Keep the moving average lists at the specified length
+            # Keep the moving average lists at the specified length by deleting the first (oldest) value when the lists are over the specified length
             if len(us1History) > movingAverageSize:
                 us1History.pop(0)
             if len(us2History) > movingAverageSize:
@@ -294,15 +304,14 @@ while True:
                     set_traffic_light(2, "green")
                     dualCycleActive = False
 
-            # If any light pattern is currently active, flash the warning lights 4 times per second. Otherwise, turn them off
+            # If any light pattern is currently active, flash the warning lights 4 times per second. Otherwise, turn the warning lights and buzzer off
             if us1CycleActive or us2CycleActive or dualCycleActive:
                 wl1State = round(((4 * time.time()) % 2) / 2) # Swaps between 0 and 1 at 4 Hz
                 set_warning_light(wl1State)
             else:
                 set_warning_light(-1)
         
-            # Write the current state of the 8 lights to the register
-            write_register(registerPinState)
+
        
         time.sleep(0.001)
         
