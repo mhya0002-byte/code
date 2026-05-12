@@ -1,7 +1,7 @@
 # This is the code for Subsystem 1, which detects the height of approaching vehicles and operates traffic lights and warning devices to prevent overheight vehicles from entering the tunnel.   
 # Created by Martin Hyatt
 # Created on Sat 4 April 2026
-# Version 1.12
+# Version 1.13
 
 from pymata4 import pymata4
 import time
@@ -204,9 +204,9 @@ sensorSpacing = 500
 threshold = (sensorSpacing * 3.6) / highwaySpeed
 
 # Output this data to the console
-print("Highway speed: " + highwaySpeed)
-print("Sensor spacing: " + sensorSpacing)
-print("Calculated time threshold: " + threshold + " seconds")
+print("Highway speed: " + str(highwaySpeed))
+print("Sensor spacing: " + str(sensorSpacing))
+print("Calculated time threshold: " + str(threshold) + " seconds")
 
 # The amount of past values to consider when calculating the moving average
 movingAverageSize = 3
