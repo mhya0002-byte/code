@@ -1,4 +1,4 @@
-#include <cstdlib>
+#include <stdlib.h>
 #include "splashkit.h"
 #include "utilities.h"
 
@@ -8,16 +8,28 @@ int main()
 
     int size;
 
-    size = read_integer("How many values to store?");
+    size = read_integer("How many values to store? ");
+    data_ptr = (double *)malloc(size * sizeof(double));
 
-    //todo: read the size of the array from the user
-    // and allocate the memory for the data
+    if (data_ptr == NULL)
+    {
+        write_line("Memory allocation failed");
+        return 1;
+    }
 
-    //todo: populate the data
+    for (int i = 0; i < size; i++)
+    {
+        data_ptr[i] = read_double("Data: ");
+    }
+    
+    for (int i = 0; i < size; i++)
+    {
+        write_line("Value at index " + to_string(i) + ": " + to_string(data_ptr[i]));
+    }
 
-    //todo: print the data
-
-    //todo: free the memory
+    free(data_ptr);
+    data_ptr = NULL;
 
     return 0;
 }
+
