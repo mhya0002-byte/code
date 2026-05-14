@@ -271,29 +271,30 @@ while True:
             if us1CycleActive:
                 if time.time() < us1LastOverheightTime + 1:
                     set_traffic_light(1, "yellow")
-                if time.time() >= us1LastOverheightTime + 1:
+                elif time.time() >= us1LastOverheightTime + 1:
                     set_traffic_light(1, "red")
-                if time.time() >= us1LastOverheightTime + 31:
+                elif time.time() >= us1LastOverheightTime + 31:
                     set_traffic_light(1, "green")
                     us1CycleActive = False
+
             
-            if us2CycleActive:
+            elif us2CycleActive:
                 if time.time() < us2StartTime + 1:
                     set_traffic_light(2, "yellow")
-                if time.time() >= us2StartTime + 1:
+                elif time.time() >= us2StartTime + 1:
                     set_traffic_light(2, "red")
-                if time.time() >= us2StartTime + 31:
+                elif time.time() >= us2StartTime + 31:
                     set_traffic_light(2, "green")
                     us2CycleActive = False
 
-            if dualCycleActive:
+            elif dualCycleActive:
                 if time.time() < dualStartTime + 1:
                     set_traffic_light(1, "yellow")
                     set_traffic_light(2, "yellow")
-                if time.time() >= dualStartTime + 1:
+                elif time.time() >= dualStartTime + 1:
                     set_traffic_light(1, "red")
                     set_traffic_light(2, "red")
-                if time.time() >= dualStartTime + 31:
+                elif time.time() >= dualStartTime + 31:
                     set_traffic_light(1, "green")
                     set_traffic_light(2, "green")
                     dualCycleActive = False
@@ -302,7 +303,8 @@ while True:
             if us1CycleActive or us2CycleActive or dualCycleActive:
                 wl1State = round(((4 * time.time()) % 2) / 2) # Swaps between 0 and 1 at 4 Hz
                 set_warning_light(wl1State)
-                buzzerTone = 0
+                if buzzerTone == -1:
+                    buzzerTone = 0
             else:
                 set_warning_light(-1)
                 buzzerTone = -1
