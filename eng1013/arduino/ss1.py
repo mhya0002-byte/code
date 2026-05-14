@@ -216,11 +216,14 @@ movingAverageSize = 3
 us1History = []
 us2History = []
 
-loopTime = 0.1
+loopTime = 0.2
 
 while True:
     try:
             time.sleep(loopTime)
+
+            # Set the buzzer to the currently active tone
+            set_buzzer(buzzerTone)
 
             # Write the current state of the 8 lights to the register
             write_register(registerPinState)            
@@ -299,16 +302,14 @@ while True:
             if us1CycleActive or us2CycleActive or dualCycleActive:
                 wl1State = round(((4 * time.time()) % 2) / 2) # Swaps between 0 and 1 at 4 Hz
                 set_warning_light(wl1State)
-                set_buzzer(0)
+                buzzerTone = 0
             else:
                 set_warning_light(-1)
-                set_buzzer(-1)
+                buzzerTone = -1
         
 
         
     except KeyboardInterrupt:
         write_register([0, 0, 0, 0, 0, 0, 0, 0]) # Clear the register
+        set_buzzer(-1)
         board.shutdown()
-
-
-    
