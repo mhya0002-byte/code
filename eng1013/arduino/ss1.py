@@ -299,8 +299,10 @@ while True:
             if us1CycleActive or us2CycleActive or dualCycleActive:
                 wl1State = round(((4 * time.time()) % 2) / 2) # Swaps between 0 and 1 at 4 Hz
                 set_warning_light(wl1State)
+                set_buzzer(0)
             else:
                 set_warning_light(-1)
+                set_buzzer(-1)
         
 
         
