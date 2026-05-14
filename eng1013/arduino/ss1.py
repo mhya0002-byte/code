@@ -215,7 +215,7 @@ movingAverageSize = 3
 us1History = []
 us2History = []
 
-loopTime = 0.25
+loopTime = 0.1
 
 while True:
     try:
@@ -226,7 +226,6 @@ while True:
 
             # Set the buzzer to the currently active tone
             set_buzzer(buzzerTone)
-
 
             # Read height data from the sensors
             us1Data = board.sonar_read(us1Trig)[0]
