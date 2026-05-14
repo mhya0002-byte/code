@@ -310,6 +310,7 @@ while True:
 
         
     except KeyboardInterrupt:
-        write_register([0, 0, 0, 0, 0, 0, 0, 0]) # Clear the register
         set_buzzer(-1)
+        write_register([0, 0, 0, 0, 0, 0, 0, 0]) # Clear the register
         board.shutdown()
+        quit()
