@@ -309,8 +309,6 @@ while True:
                 set_warning_light(-1)
                 buzzerTone = -1
         
-
-        
     except KeyboardInterrupt:
         set_buzzer(-1)
         write_register([0, 0, 0, 0, 0, 0, 0, 0]) # Clear the register
