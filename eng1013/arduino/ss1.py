@@ -14,6 +14,10 @@ try:
 except ValueError:
     overheightLimit = 4
 
+# Time to hold each light at a particular colour
+yellowTime = 1
+redTime = 30
+
 ### Ultrasonic sensor initialisation
 # The height in metres above the ground at which the sensors are to be placed.
 sensorHeight = 10
@@ -174,8 +178,10 @@ def set_buzzer(state):
         board.digital_write(buzzerHighPin, 0)
     elif state == 0:
         board.digital_write(buzzerLowPin, 1)
+        board.digital_write(buzzerHighPin, 0)
     elif state == 1:
         board.digital_write(buzzerHighPin, 1)
+        board.digital_write(buzzerLowPin, 0)
 
 # Buzzer starts off
 buzzerTone = -1
@@ -191,6 +197,9 @@ set_warning_light(-1)
 us1CycleActive = False
 us2CycleActive = False
 dualCycleActive = False
+
+# US2 is considered not to be detecting an overheight vehicle when the subsystem is started
+us2Overheight = False
 
 # Initialise this variable to 0 to ensure comparisons are correct when the program is first run
 us1LastOverheightTime = 0
@@ -256,9 +265,12 @@ while True:
 
             # If US2 detects an overheight vehicle:
             if (us2Data <= (sensorHeight - overheightLimit)):
+                us2Overheight = True
+
                 # If US2 detects an overheight vehicle after the threshold time has passed (Assuming a different vehicle triggered US1, if any), start the pattern for both traffic lights
                 if (time.time() - us1LastOverheightTime) >= threshold:
                     if dualCycleActive == False:
+                        us1CycleActive = False
                         dualCycleActive = True
                         dualStartTime = time.time()
 
@@ -266,35 +278,46 @@ while True:
                 elif us2CycleActive == False:
                     us2CycleActive = True
                     us2StartTime = time.time()
+            else:
+                us2Overheight = False
 
             # Set the lights to the correct colour depending on the time and the current pattern to be displayed
             if us1CycleActive:
-                if time.time() < us1LastOverheightTime + 1:
+                if time.time() < us1LastOverheightTime + yellowTime:
                     set_traffic_light(1, "yellow")
-                elif us1LastOverheightTime + 1 <= time.time() < us1LastOverheightTime + 31:
+                elif us1LastOverheightTime + yellowTime <= time.time() < us1LastOverheightTime + yellowTime + redTime:
                     set_traffic_light(1, "red")
                 else:
                     set_traffic_light(1, "green")
                     us1CycleActive = False
 
             
-            elif us2CycleActive:
-                if time.time() < us2StartTime + 1:
+            if us2CycleActive:
+                if time.time() < us2StartTime + yellowTime:
                     set_traffic_light(2, "yellow")
-                elif us2StartTime + 1 <= time.time() < us2StartTime + 31:
+                elif us2StartTime + yellowTime <= time.time() < us2StartTime + yellowTime + redTime:
+                    set_traffic_light(2, "red")
+                elif us2Overheight:
+                    buzzerTone = 1
+                    set_traffic_light(1, "red")
                     set_traffic_light(2, "red")
                 else:
+                    buzzerTone = -1
+                    set_traffic_light(1, "green")
                     set_traffic_light(2, "green")
                     us2CycleActive = False
 
             elif dualCycleActive:
-                if time.time() < dualStartTime + 1:
+                if time.time() < dualStartTime + yellowTime:
                     set_traffic_light(1, "yellow")
                     set_traffic_light(2, "yellow")
-                elif dualStartTime + 1 <= time.time() < dualStartTime + 31:
+                elif dualStartTime + yellowTime <= time.time() < dualStartTime + yellowTime + redTime:
                     set_traffic_light(1, "red")
                     set_traffic_light(2, "red")
+                elif us2Overheight:
+                    buzzerTone = 1
                 else:
+                    buzzerTone = -1
                     set_traffic_light(1, "green")
                     set_traffic_light(2, "green")
                     dualCycleActive = False
