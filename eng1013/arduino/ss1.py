@@ -271,9 +271,9 @@ while True:
             if us1CycleActive:
                 if time.time() < us1LastOverheightTime + 1:
                     set_traffic_light(1, "yellow")
-                elif time.time() >= us1LastOverheightTime + 1:
+                elif us1LastOverheightTime + 1 <= time.time() < us1LastOverheightTime + 31:
                     set_traffic_light(1, "red")
-                elif time.time() >= us1LastOverheightTime + 31:
+                else:
                     set_traffic_light(1, "green")
                     us1CycleActive = False
 
@@ -281,9 +281,9 @@ while True:
             elif us2CycleActive:
                 if time.time() < us2StartTime + 1:
                     set_traffic_light(2, "yellow")
-                elif time.time() >= us2StartTime + 1:
+                elif us2StartTime + 1 <= time.time() < us2StartTime + 31:
                     set_traffic_light(2, "red")
-                elif time.time() >= us2StartTime + 31:
+                else:
                     set_traffic_light(2, "green")
                     us2CycleActive = False
 
@@ -291,10 +291,10 @@ while True:
                 if time.time() < dualStartTime + 1:
                     set_traffic_light(1, "yellow")
                     set_traffic_light(2, "yellow")
-                elif time.time() >= dualStartTime + 1:
+                elif dualStartTime + 1 <= time.time() < dualStartTime + 31:
                     set_traffic_light(1, "red")
                     set_traffic_light(2, "red")
-                elif time.time() >= dualStartTime + 31:
+                else:
                     set_traffic_light(1, "green")
                     set_traffic_light(2, "green")
                     dualCycleActive = False
