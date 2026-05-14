@@ -170,15 +170,16 @@ def set_buzzer(state):
             Nothing
     """
     if state == -1:
-        board.digital_pin_write(buzzerLowPin, 0)
-        board.digital_pin_write(buzzerHighPin, 0)
+        board.digital_write(buzzerLowPin, 0)
+        board.digital_write(buzzerHighPin, 0)
     elif state == 0:
-        board.digital_pin_write(buzzerLowPin, 1)
+        board.digital_write(buzzerLowPin, 1)
     elif state == 1:
-        board.digital_pin_write(buzzerHighPin, 1)
+        board.digital_write(buzzerHighPin, 1)
 
 # Buzzer starts off
 buzzerTone = -1
+set_buzzer(buzzerTone)
 ###
 
 # Sets the initial state of the lights: Both traffic lights green and warning lights off.
@@ -222,11 +223,8 @@ while True:
             time.sleep(loopTime)
 
             # Write the current state of the 8 lights to the register
-            write_register(registerPinState)
-
-            # Set the buzzer to the currently active tone
-            set_buzzer(buzzerTone)
-
+            write_register(registerPinState)            
+            
             # Read height data from the sensors
             us1Data = board.sonar_read(us1Trig)[0]
             us2Data = board.sonar_read(us2Trig)[0]
