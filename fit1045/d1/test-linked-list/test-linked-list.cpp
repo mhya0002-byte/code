@@ -115,11 +115,11 @@ public:
 
         new_node_ptr->data = data;
 
-        node<t> previous_node = find_previous_node(target_node)
+        node<T> *previous_node = find_previous_node(target_node);
 
         if (previous_node == nullptr)
         {
-            first = target_node;
+            first = new_node_ptr;
         }
         else
         {
@@ -302,7 +302,7 @@ int main()
     int data_input;
     int index_input;
 
-    while (true)
+    while (!quit_requested())
     {
         {
 
