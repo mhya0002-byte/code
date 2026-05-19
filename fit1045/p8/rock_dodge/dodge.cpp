@@ -1,5 +1,128 @@
 #include "splashkit.h"
-#include "splashkit-arrays.h"
+
+template <typename T>
+class dynamic_array
+{
+private:
+    T *_data;
+    int _size;
+    int _capacity;
+
+    void resize(int new_capacity)
+    {
+        if (new_capacity < 2)
+        {
+            new_capacity = 2;
+        }
+
+        T *new_data = (T *)malloc(new_capacity * sizeof(T));
+
+        if (new_data == NULL)
+        {
+            throw "Memory allocation failed";
+        }
+
+        for (int i = 0; i < _size; i++)
+        {
+            new (&new_data[i]) T(std::move(_data[i]));
+            _data[i].~T();
+        }
+
+        free(_data);
+
+        _data = new_data;
+        _capacity = new_capacity;
+    }
+
+public:
+    dynamic_array()
+    {
+        _capacity = 2;
+        _size = 0;
+
+        _data = (T *)malloc(_capacity * sizeof(T));
+
+        if (_data == NULL)
+        {
+            throw "Memory allocation failed";
+        }
+    }
+
+    // Disable copying
+    dynamic_array(const dynamic_array &) = delete;
+    dynamic_array &operator=(const dynamic_array &) = delete;
+
+    ~dynamic_array()
+    {
+        for (int i = 0; i < _size; i++)
+        {
+            _data[i].~T();
+        }
+
+        free(_data);
+        _data = NULL;
+    }
+
+    void add(const T &value)
+    {
+        if (_size >= _capacity)
+        {
+            resize(_capacity * 2);
+        }
+
+        new (&_data[_size]) T(value);
+
+        _size++;
+    }
+
+    void remove(int index)
+    {
+        if (_size == 0)
+        {
+            throw "Cannot remove from empty list";
+        }
+
+        if (index < 0 || index >= _size)
+        {
+            throw "Index out of bounds";
+        }
+
+        _data[index].~T();
+
+        for (int i = index; i < _size - 1; i++)
+        {
+            new (&_data[i]) T(std::move(_data[i + 1]));
+            _data[i + 1].~T();
+        }
+
+        _size--;
+
+        if (_size < _capacity / 2)
+        {
+            resize(_capacity / 2);
+        }
+    }
+
+    T &operator[](int index) const
+    {
+        if (index < 0 || index >= _size)
+        {
+            throw "Index out of bounds";
+        }
+
+        return _data[index];
+    }
+
+    int size() const
+    {
+        return _size;
+    }
+
+    int capacity() const
+    {
+        return _capacity;
+    }
+};
 
 struct rock_data
 {
@@ -9,7 +132,7 @@ struct rock_data
 
 struct game_data
 {
-    dynamic_array<rock_data> rocks = {};
+    dynamic_array<rock_data> rocks;
 
     circle player_circle_properties;
 
@@ -34,7 +157,7 @@ void draw_game(const game_data &game)
 {
     clear_screen(COLOR_WHITE);
 
-    for (int i = 0; i < length(game.rocks); i++)
+    for (int i = 0; i < game.rocks.size(); i++)
     {
         rock_data rock = game.rocks[i];
 
@@ -54,7 +177,7 @@ void draw_game(const game_data &game)
 
 void game_tick(game_data &game)
 {
-    for (int i = 0; i < length(game.rocks); i++)
+    for (int i = 0; i < game.rocks.size(); i++)
     {
         game.rocks[i].circle_properties.center.y += game.rocks[i].speed;
 
@@ -63,14 +186,14 @@ void game_tick(game_data &game)
         if (rock.circle_properties.center.y >= screen_height() + game.rocks[i].circle_properties.radius)
         {
             game.score += rock.circle_properties.radius;
-            remove(game.rocks, i);
+            game.rocks.remove(i);
             i--;
         }
-        
+
         if (circles_intersect(rock.circle_properties, game.player_circle_properties))
         {
             game.player_lives--;
-            remove(game.rocks, i);
+            game.rocks.remove(i);
         }
     }
 
