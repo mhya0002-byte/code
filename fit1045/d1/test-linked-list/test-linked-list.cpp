@@ -102,6 +102,8 @@ public:
         new_node_ptr->data = data;
         new_node_ptr->next = target_node->next;
 
+        last = new_node_ptr;
+
         target_node->next = new_node_ptr;
 
         return new_node_ptr;
