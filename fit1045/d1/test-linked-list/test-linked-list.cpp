@@ -113,7 +113,16 @@ public:
 
         new_node_ptr->data = data;
 
-        find_previous_node(target_node)->next = new_node_ptr;
+        node<t> previous_node = find_previous_node(target_node)
+
+        if (previous_node == nullptr)
+        {
+            first = target_node;
+        }
+        else
+        {
+            previous_node->next = new_node_ptr;
+        }
 
         new_node_ptr->next = target_node;
 
