@@ -81,17 +81,29 @@ void handle_edit_cheese(shop_data &shop)
     }
 }
 
+void delete_cheese(shop_data &shop, int index)
+{
+    shop.cheeses.remove(index);
+}
+
+void handle_delete_cheese(shop_data &shop)
+{
+    int delete_index = select_cheese(shop);
+    delete_cheese(shop, delete_index);
+}
+
 enum main_menu_option
 {
     EXIT_MAIN_MENU,
     ADD_CHEESE_MENU,
     EDIT_CHEESE_MENU,
+    DELETE_CHEESE_MENU,
     PRINT_STOCK_LIST_MENU
 };
 
 main_menu_option read_main_menu()
 {
-    int option_number = read_integer_range("Enter a menu option: ", 0, 3);
+    int option_number = read_integer_range("Enter a menu option: ", 0, 4);
 
     return (main_menu_option)option_number;
 }
@@ -108,7 +120,8 @@ int main()
         write_line("0. Exit");
         write_line("1. Add cheese");
         write_line("2. Edit cheese");
-        write_line("3. Print cheese list");
+        write_line("3. Delete cheese");
+        write_line("4. Print cheese list");
 
         choice = read_main_menu();
 
@@ -124,6 +137,10 @@ int main()
 
         case EDIT_CHEESE_MENU:
             handle_edit_cheese(shop);
+            break;
+
+        case DELETE_CHEESE_MENU:
+            handle_delete_cheese(shop);
             break;
 
         case PRINT_STOCK_LIST_MENU:
