@@ -1,0 +1,18 @@
+Take the following class `bounded_array`, and modify it into a `dynamic_array` class that automatically expands when full. It should have the following behaviour:
+
+Start with a minimum size of 2
+Double this size whenever the maximum number of items is reached, and halve it when the number of items is less than half of the size
+Use a remove method which removes the data at a given index
+Use malloc, which allocates the memory for objects, but only constructs them when they become used, in order to avoid allocating large amounts of memory that may potentially go unused.
+Use placement new, and construct new elements from the value passed in directly
+Manually destruct objects by explicitly calling their destructor.
+For reallocation, we need to:
+Allocate a new, larger block of memory.
+Move (or copy) our existing elements into it, and destruct the old ones.
+
+Add test procedures outside of main that test all of the class' functionality, and print out their results with splashkit's write_line.
+Implement a mixture of tests that pass and fail while testing the same functionality.
+Here is what needs to be tested:
+Basic Usage - Does the length still increase when elements are added? Does get still return the correct value?
+Capacity - Does the capacity increase when the limit is reached? Does it match our specification?
+Complex Type - Does the array work with string, or a custom class with a constructor and destructor?
