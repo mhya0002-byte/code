@@ -1,7 +1,7 @@
 # This is the code for Subsystem 1, which detects the height of approaching vehicles and operates traffic lights and warning devices to prevent overheight vehicles from entering the tunnel.   
 # Created by Martin Hyatt
 # Created on Sat 4 April 2026
-# Version 1.10
+# Version 1.27
 
 from pymata4 import pymata4
 import time
@@ -13,6 +13,10 @@ try:
     overheightLimit = int(input("Enter the overheight limit in m: "))
 except ValueError:
     overheightLimit = 4
+
+# Time to hold each light at a particular colour
+yellowTime = 1
+redTime = 30
 
 ### Ultrasonic sensor initialisation
 # The height in metres above the ground at which the sensors are to be placed.
@@ -149,6 +153,7 @@ def set_warning_light(state):
         set_led(6, 0)
         set_led(7, 0)
     else:
+        # Both lights are always opposite states
         set_led(6, state)
         set_led(7, 1 - state)
 ###
@@ -159,6 +164,28 @@ buzzerHighPin = 15  # Pin A1
     
 board.set_pin_mode_digital_output(buzzerLowPin)
 board.set_pin_mode_digital_output(buzzerHighPin)
+
+def set_buzzer(state):
+    """
+    Controls the state of the buzzer: Off, low tone, or high tone.
+        Parameters:
+            state (integer from -1 to 1): Determines the state to set the buzzer to. -1 is off, 0 is low tone, 1 is high tone.
+        Returns:
+            Nothing
+    """
+    if state == -1:
+        board.digital_write(buzzerLowPin, 0)
+        board.digital_write(buzzerHighPin, 0)
+    elif state == 0:
+        board.digital_write(buzzerLowPin, 1)
+        board.digital_write(buzzerHighPin, 0)
+    elif state == 1:
+        board.digital_write(buzzerHighPin, 1)
+        board.digital_write(buzzerLowPin, 0)
+
+# Buzzer starts off
+buzzerTone = -1
+set_buzzer(buzzerTone)
 ###
 
 # Sets the initial state of the lights: Both traffic lights green and warning lights off.
@@ -166,15 +193,15 @@ set_traffic_light(1, "green")
 set_traffic_light(2, "green")
 set_warning_light(-1)
 
-# Writes the state of the lights to the register.
-write_register(registerPinState)
-
 # No light patterns are active when the subsystem is started
 us1CycleActive = False
 us2CycleActive = False
 dualCycleActive = False
 
-# 
+# US2 is considered not to be detecting an overheight vehicle when the subsystem is started
+us2Overheight = False
+
+# Initialise this variable to 0 to ensure comparisons are correct when the program is first run
 us1LastOverheightTime = 0
 
 # Average speed of vehicles on the highway in km/h (Arbitrarily chosen to be 100)
@@ -186,6 +213,11 @@ sensorSpacing = 500
 # Time threshold in seconds within which US1 is considered to have detected an overheight vehicle (From 1.R3)
 threshold = (sensorSpacing * 3.6) / highwaySpeed
 
+# Output this data to the console
+print("Highway speed: " + str(highwaySpeed) + " km/h")
+print("Sensor spacing: " + str(sensorSpacing) + " m")
+print("Calculated time threshold: " + str(threshold) + " seconds")
+
 # The amount of past values to consider when calculating the moving average
 movingAverageSize = 3
 
@@ -193,18 +225,18 @@ movingAverageSize = 3
 us1History = []
 us2History = []
 
-pollInterval = 0.25
-lastPollTime = time.time()
-thisPollTime = lastPollTime
+loopTime = 0.2
 
 while True:
     try:
-        thisPollTime = time.time()
+            time.sleep(loopTime)
 
-        if thisPollTime - lastPollTime >= pollInterval:
+            # Set the buzzer to the currently active tone
+            set_buzzer(buzzerTone)
 
-            lastPollTime = thisPollTime
-
+            # Write the current state of the 8 lights to the register
+            write_register(registerPinState)            
+            
             # Read height data from the sensors
             us1Data = board.sonar_read(us1Trig)[0]
             us2Data = board.sonar_read(us2Trig)[0]
@@ -213,7 +245,7 @@ while True:
             us1History.append(us1Data)
             us2History.append(us2Data)
 
-            # Keep the moving average lists at the specified length
+            # Keep the moving average lists at the specified length by deleting the first (oldest) value when the lists are over the specified length
             if len(us1History) > movingAverageSize:
                 us1History.pop(0)
             if len(us2History) > movingAverageSize:
@@ -233,9 +265,12 @@ while True:
 
             # If US2 detects an overheight vehicle:
             if (us2Data <= (sensorHeight - overheightLimit)):
+                us2Overheight = True
+
                 # If US2 detects an overheight vehicle after the threshold time has passed (Assuming a different vehicle triggered US1, if any), start the pattern for both traffic lights
                 if (time.time() - us1LastOverheightTime) >= threshold:
                     if dualCycleActive == False:
+                        us1CycleActive = False
                         dualCycleActive = True
                         dualStartTime = time.time()
 
@@ -243,53 +278,62 @@ while True:
                 elif us2CycleActive == False:
                     us2CycleActive = True
                     us2StartTime = time.time()
+            else:
+                us2Overheight = False
 
             # Set the lights to the correct colour depending on the time and the current pattern to be displayed
             if us1CycleActive:
-                if time.time() < us1LastOverheightTime + 1:
+                if time.time() < us1LastOverheightTime + yellowTime:
                     set_traffic_light(1, "yellow")
-                if time.time() >= us1LastOverheightTime + 1:
+                elif us1LastOverheightTime + yellowTime <= time.time() < us1LastOverheightTime + yellowTime + redTime:
                     set_traffic_light(1, "red")
-                if time.time() >= us1LastOverheightTime + 31:
+                else:
                     set_traffic_light(1, "green")
                     us1CycleActive = False
+
             
             if us2CycleActive:
-                if time.time() < us2StartTime + 1:
+                if time.time() < us2StartTime + yellowTime:
                     set_traffic_light(2, "yellow")
-                if time.time() >= us2StartTime + 1:
+                elif us2StartTime + yellowTime <= time.time() < us2StartTime + yellowTime + redTime:
                     set_traffic_light(2, "red")
-                if time.time() >= us2StartTime + 31:
+                elif us2Overheight:
+                    buzzerTone = 1
+                    set_traffic_light(1, "red")
+                    set_traffic_light(2, "red")
+                else:
+                    buzzerTone = -1
+                    set_traffic_light(1, "green")
                     set_traffic_light(2, "green")
                     us2CycleActive = False
 
-            if dualCycleActive:
-                if time.time() < dualStartTime + 1:
+            elif dualCycleActive:
+                if time.time() < dualStartTime + yellowTime:
                     set_traffic_light(1, "yellow")
                     set_traffic_light(2, "yellow")
-                if time.time() >= dualStartTime + 1:
+                elif dualStartTime + yellowTime <= time.time() < dualStartTime + yellowTime + redTime:
                     set_traffic_light(1, "red")
                     set_traffic_light(2, "red")
-                if time.time() >= dualStartTime + 31:
+                elif us2Overheight:
+                    buzzerTone = 1
+                else:
+                    buzzerTone = -1
                     set_traffic_light(1, "green")
                     set_traffic_light(2, "green")
                     dualCycleActive = False
 
-            # If any light pattern is currently active, flash the warning lights 4 times per second. Otherwise, turn them off
+            # If any light pattern is currently active, flash the warning lights 4 times per second. Otherwise, turn the warning lights and buzzer off
             if us1CycleActive or us2CycleActive or dualCycleActive:
                 wl1State = round(((4 * time.time()) % 2) / 2) # Swaps between 0 and 1 at 4 Hz
                 set_warning_light(wl1State)
+                if buzzerTone == -1:
+                    buzzerTone = 0
             else:
                 set_warning_light(-1)
-        
-            # Write the current state of the 8 lights to the register
-            write_register(registerPinState)
-       
-        time.sleep(0.001)
+                buzzerTone = -1
         
     except KeyboardInterrupt:
+        set_buzzer(-1)
         write_register([0, 0, 0, 0, 0, 0, 0, 0]) # Clear the register
         board.shutdown()
-
-
-    
+        quit()
